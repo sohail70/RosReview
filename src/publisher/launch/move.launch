@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg ="publisher" type="Move" name="publish_to_cmd" output="screen">
+    </node>
+
+</launch>

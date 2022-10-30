@@ -1,0 +1,8 @@
+<launch>
+    <node pkg="publisher" type="publish" name ="publisher_soheil" output="screen">
+
+    </node>
+    
+
+
+</launch>

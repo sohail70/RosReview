@@ -1,0 +1,7 @@
+<launch>
+
+    <node pkg="subscriber" type="sub" name="subscriber_to_counter" output="screen">
+    </node>
+    
+
+</launch>
