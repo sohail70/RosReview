@@ -1,0 +1,19 @@
+<!--Hard launch-->
+<launch>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find topic_exercise)/include/world/wall.world.xml"/>
+    </include>
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(find topic_exercise)/launch/dep/urdf/turtlebot3_waffle.urdf.xacro' "/>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_robot_1" args="-model robot_1 -urdf -param robot_description"/>
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="30.0"/>
+        <param name="use_tf_static" type="bool" value="false"/>
+        <param name="tf_prefix" type="string" value=""/>
+    </node>
+
+    <node pkg="topic_exercise" type="avoiding_wall" name="avoid" output="screen">
+    </node>
+
+</launch>
