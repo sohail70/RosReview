@@ -1,0 +1,5 @@
+
+float64 side
+int32 repetition
+---
+bool success

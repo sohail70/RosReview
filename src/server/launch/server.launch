@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="server" type="server" name="soheil_server" output="screen">
+    </node>
+    
+
+
+</launch>
