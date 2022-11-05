@@ -1,0 +1,5 @@
+<launch>
+
+    <node pkg = "action" type="action_server" name="server" output="screen"/>
+
+</launch>
