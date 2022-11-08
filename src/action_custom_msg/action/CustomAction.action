@@ -1,0 +1,10 @@
+
+#goal
+int32 seconds
+nav_msgs/Odometry od
+---
+#result
+sensor_msgs/CompressedImage[] allPictures #an array of pictures
+---
+#feeback
+sensor_msgs/CompressedImage lastPic

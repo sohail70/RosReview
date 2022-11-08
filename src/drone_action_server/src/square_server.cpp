@@ -4,6 +4,7 @@
 #include<geometry_msgs/Twist.h>
 #include<functional>
 #define PI 3.14
+
 class MoveSquareAction{
     public:
         MoveSquareAction(std::string name_): action_name(name_) , as_(nh_,name_ , std::bind(&MoveSquareAction::exec , this,std::placeholders::_1) , false)
@@ -18,7 +19,7 @@ class MoveSquareAction{
             side = goal->goal;
             double x_speed = 1;
             double z_speed = 1;
-            double w_z = .1;
+            double w_z = .5;
             double height = 1;
 
             take_off(z_speed, height);
@@ -29,6 +30,8 @@ class MoveSquareAction{
                 {
                     as_.setPreempted();
                     success = false;
+                    this->stop();
+                    this->land();
                     break;
                 }
 
@@ -117,3 +120,5 @@ int main(int argc , char** argv)
     ros::spin();
     return 0;
 }
+
+

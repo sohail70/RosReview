@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(drone_action_server)
+project(action_custom_msg)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,9 +8,11 @@ project(drone_action_server)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  actionlib
   actionlib_msgs
+  actionlib
   roscpp
+  nav_msgs
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -61,17 +63,20 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
+ add_action_files(
+   FILES
+   CustomAction.action
 #   Action2.action
-# )
+ )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   actionlib_msgs
+   std_msgs
+   nav_msgs
+   sensor_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -104,8 +109,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES drone_action_server
-#  CATKIN_DEPENDS actionlib actionlib_msg roscpp
+#  LIBRARIES action_custom_msg
+  CATKIN_DEPENDS actiolib_msgs actionlib roscpp
 #  DEPENDS system_lib
 )
 
@@ -122,7 +127,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/drone_action_server.cpp
+#   src/${PROJECT_NAME}/action_custom_msg.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -133,10 +138,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(square_server src/square_server.cpp)
-add_executable(square_client src/square_client.cpp)
-add_executable(square_client_while_wait src/square_client_while_wait.cpp)
-add_executable(square_client_cancel_goal src/square_client_cancel_goal.cpp)
+# add_executable(${PROJECT_NAME}_node src/action_custom_msg_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,28 +148,13 @@ add_executable(square_client_cancel_goal src/square_client_cancel_goal.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
- add_dependencies(square_server ${square_server_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
- add_dependencies(square_client ${square_server_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
- add_dependencies(square_client_while_wait ${square_client_while_wait_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
- add_dependencies(square_client_cancel_goal ${square_client_cancel_goal_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(square_server
-   ${catkin_LIBRARIES}
-)
-target_link_libraries(square_client
-${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
-
-target_link_libraries(square_client_while_wait
-${catkin_LIBRARIES}
-)
-
-target_link_libraries(square_client_cancel_goal
-${catkin_LIBRARIES}
-)
 #############
 ## Install ##
 #############
@@ -215,7 +202,7 @@ ${catkin_LIBRARIES}
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_drone_action_server.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_action_custom_msg.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
