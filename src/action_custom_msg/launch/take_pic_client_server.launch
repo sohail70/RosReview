@@ -1,0 +1,11 @@
+<launch>
+
+    <!--include file="$(find hector_quadrotor_gazebo)/launch/quadrotor_empty_world.launch" /-->
+
+    <node pkg = "action_custom_msg" type="square_server_2" name ="square_server_2" output="screen" />
+
+    <node pkg = "action_custom_msg" type="takingPic" name ="takingPic" output="screen" />
+    
+    <node pkg = "action_custom_msg" type="square_client_take_pic" name ="square_client_take_pic" output="screen" />
+
+</launch>

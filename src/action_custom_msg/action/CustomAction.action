@@ -1,10 +1,10 @@
 
 #goal
 int32 seconds
-nav_msgs/Odometry od
+# nav_msgs/Odometry od
 ---
 #result
-sensor_msgs/CompressedImage[] allPictures #an array of pictures
+sensor_msgs/Image[] allPictures #an array of pictures
 ---
 #feeback
-sensor_msgs/CompressedImage lastPic
+sensor_msgs/Image lastPic

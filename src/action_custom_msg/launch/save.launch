@@ -1,0 +1,8 @@
+<launch>
+
+    <!--include file="$(find hector_quadrotor_gazebo)/launch/quadrotor_empty_world.launch" /-->
+
+    <node pkg = "action_custom_msg" type="saveImage" name ="saveImage" output="screen" />
+    
+
+</launch>

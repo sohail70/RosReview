@@ -13,7 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   nav_msgs
   sensor_msgs
+  cv_bridge
 )
+
+find_package( OpenCV REQUIRED )
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -123,6 +127,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -138,8 +143,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/action_custom_msg_node.cpp)
-
+ add_executable(square_server_2 src/square_server_2.cpp)
+ add_executable(square_client_take_pic src/square_client_take_pic.cpp)
+ add_executable(saveImage src/saveImage.cpp)
+ add_executable(takingPic src/taking_pic_server.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -148,13 +155,28 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(square_server_2 ${square_server_2_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(square_client_take_pic ${square_client_take_pic_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(saveImage ${saveImage_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(takingPic ${takingPic_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(square_server_2
+   ${catkin_LIBRARIES}
+ )
+ target_link_libraries(square_client_take_pic
+   ${catkin_LIBRARIES}
+ )
 
+ target_link_libraries(saveImage
+ ${catkin_LIBRARIES}
+ ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(takingPic
+${catkin_LIBRARIES}
+${OpenCV_LIBRARIES}
+)
 #############
 ## Install ##
 #############
