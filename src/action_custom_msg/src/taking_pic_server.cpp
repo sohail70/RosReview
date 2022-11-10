@@ -38,7 +38,6 @@ class TakePic
                     success=false;
                     break;
                 }
-                addImage();
                 saveImage();
                 feedback_.lastPic = current_image_comp;
                 server_.publishFeedback(feedback_);
@@ -67,13 +66,10 @@ class TakePic
             counter++;
             ROS_INFO("saving image: %s",soheil.c_str());
             bool b = cv::imwrite("/home/sohail/img/"+soheil,current_image);
-
-        }
-
-        void addImage()
-        {
             whole_image.push_back(current_image_comp);
+
         }
+
 
     private:
         ros::NodeHandle nh;
