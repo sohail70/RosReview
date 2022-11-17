@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find slam_sim)/launch/provide_map.launch"/>
+
+    <node pkg="slam_sim" type="map_client" name="map_client" output="screen"/>
+
+
+</launch>

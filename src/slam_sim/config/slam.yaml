@@ -1,0 +1,4 @@
+base_frame: "/base_link"
+odom_frame: "/odom"
+map_frame: "/map"
+maxUrange: 1

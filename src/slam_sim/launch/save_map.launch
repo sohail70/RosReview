@@ -1,0 +1,7 @@
+<launch>
+
+<node pkg="map_server" type="map_saver" name="save_map" args = "-f $(find slam_sim)/map/my_map"/>
+
+
+
+</launch>

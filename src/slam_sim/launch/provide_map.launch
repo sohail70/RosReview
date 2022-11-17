@@ -1,0 +1,5 @@
+<launch>
+
+    <node pkg="map_server" type="map_server" name="map_provider" args="$(find slam_sim)/map/my_map.yaml"/>
+
+</launch>

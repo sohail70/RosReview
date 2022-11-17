@@ -23,6 +23,10 @@
     <node pkg = "map_server" type="map_server" name="map_server" args="$(arg map_file)"/>
 
 
+
+    <!-- agar rosparam ra biron az pkg bezarim bayad dar config amcl_params parma ha ra 
+    betor /amcl/min_particles benvisim vali agar dakhele node e paeen bezarim niazi be 
+    neveshtan amcl nist-->
     <rosparam command="load" file="$(find my_navigation)/config/amcl_params.yaml" />
 
     <node pkg="amcl" type="amcl" name= "amcl" output="screen">
