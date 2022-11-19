@@ -1,0 +1,56 @@
+<launch>
+    <include file ="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name = "world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_world.world" />
+    </include>
+
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(find my_navigation)/launch/dep/urdf/turtlebot3_waffle.urdf.xacro' "/>
+    <node pkg = "gazebo_ros" type="spawn_model" name="spawn_tb3" args="-model tb3 -urdf -x -2.0 -y -0.5 -z 0.0   -param robot_description" />
+
+
+
+    <node pkg = "robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="30.0"/>
+        <param name="use_tf_static" type="bool" value="false"/>
+        <param name="tf_prefix" type="string" value=""/>
+
+    </node>
+
+
+
+
+    <arg name="map_file" default="$(find my_navigation)/map/map.yaml" />
+    <node pkg = "map_server" type="map_server" name="map_server" args="$(arg map_file)"/>
+
+
+
+    <!-- agar rosparam ra biron az pkg bezarim bayad dar config amcl_params parma ha ra 
+    betor /amcl/min_particles benvisim vali agar dakhele node e paeen bezarim niazi be 
+    neveshtan amcl nist-->
+    <rosparam command="load" file="$(find my_navigation)/config/amcl_params.yaml" />
+
+    <node pkg="amcl" type="amcl" name= "amcl" output="screen">
+            <remap from="/scan" to="/base_scan"/>
+    </node>
+
+
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+    <arg name="move_forward_only" default="false"/>
+    <node pkg="move_base" type="move_base" name="move_base" output="screen">
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <rosparam file="$(find my_navigation)/param/costmap_common_params_$(arg model).yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find my_navigation)/param/costmap_common_params_$(arg model).yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find my_navigation)/param/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find my_navigation)/param/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find my_navigation)/param/move_base_params.yaml" command="load" />
+        <rosparam file="$(find my_navigation)/param/dwa_local_planner_params_$(arg model).yaml" command="load" />
+        
+        <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+        <remap from="scan" to="base_scan"/>
+    </node>
+
+
+
+
+</launch>
+

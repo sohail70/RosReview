@@ -9,6 +9,7 @@ project(my_navigation)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -132,6 +133,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(global_loc_client src/global_loc_client.cpp)
+add_executable(goal src/goal_action_client.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -142,12 +144,15 @@ add_executable(global_loc_client src/global_loc_client.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
  add_dependencies(global_loc_client ${global_loc_client_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(goal ${goal_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(global_loc_client
    ${catkin_LIBRARIES}
  )
-
+ target_link_libraries(goal
+   ${catkin_LIBRARIES}
+ )
 #############
 ## Install ##
 #############
