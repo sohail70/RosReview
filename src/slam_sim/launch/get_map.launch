@@ -3,5 +3,4 @@
 
     <node pkg="slam_sim" type="map_client" name="map_client" output="screen"/>
 
-
 </launch>
