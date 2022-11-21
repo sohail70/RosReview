@@ -10,3 +10,9 @@ cost_scaling_factor: 3.0
 map_type: costmap
 observation_sources: scan
 scan: {sensor_frame: base_scan, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+
+# deghat kun age plugin ro nazari az predefine va default use mikune ke dar doc zekr shode vali age bezari faghat hamin layer ha ro neshoon mide
+plugins: 
+    - {name: static_layer,         type: "costmap_2d::StaticLayer"}
+    - {name: obstacles_layer,      type: "costmap_2d::VoxelLayer"}
+    - {name: inflation,           type: "costmap_2d::InflationLayer"}

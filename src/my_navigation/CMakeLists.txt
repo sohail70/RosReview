@@ -134,6 +134,8 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(global_loc_client src/global_loc_client.cpp)
 add_executable(goal src/goal_action_client.cpp)
+add_executable(setInitPose src/setInitialPose.cpp)
+add_executable(make_plan src/make_plan_service_client.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,6 +147,9 @@ add_executable(goal src/goal_action_client.cpp)
 ## same as for the library above
  add_dependencies(global_loc_client ${global_loc_client_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
  add_dependencies(goal ${goal_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(setInitPose ${setInitPose_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(make_plan ${make_plan_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(global_loc_client
@@ -153,6 +158,14 @@ add_executable(goal src/goal_action_client.cpp)
  target_link_libraries(goal
    ${catkin_LIBRARIES}
  )
+
+ target_link_libraries(setInitPose
+ ${catkin_LIBRARIES}
+)
+
+target_link_libraries(make_plan
+${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############

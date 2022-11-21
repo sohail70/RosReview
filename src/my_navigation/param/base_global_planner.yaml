@@ -1,0 +1,4 @@
+
+# base_global_planner: "carrot_planner/CarrotPlanner"
+base_global_planner: "navfn/NavfnROS"
+# base_global_planner: "global_planner/GlobalPlanner"

@@ -33,6 +33,7 @@
             <remap from="/scan" to="/base_scan"/>
     </node>
 
+    <node pkg="my_navigation" type="setInitPose" name="setPose" output="screen"/>
 
     <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
     <arg name="move_forward_only" default="false"/>
@@ -46,6 +47,8 @@
         <rosparam file="$(find my_navigation)/param/dwa_local_planner_params_$(arg model).yaml" command="load" />
         
         <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+        
+        <rosparam file="$(find my_navigation)/param/base_global_planner.yaml" command="load"/>
         <remap from="scan" to="base_scan"/>
     </node>
 
@@ -53,4 +56,6 @@
 
 
 </launch>
+
+
 

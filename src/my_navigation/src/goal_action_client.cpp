@@ -15,7 +15,7 @@ void activeCB(){
 
 
 void feedbackCB(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback){
-    ROS_INFO("FEEDBACK");
+    //ROS_INFO("FEEDBACK");
 }
 
 

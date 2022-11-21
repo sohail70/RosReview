@@ -1,6 +1,7 @@
 <launch>
     <include file="$(find my_navigation)/launch/navigation.launch"/>
     <node pkg="my_navigation" type="goal" name="navigation_on_loop" output="screen"/>
+    
     <!-- albate deghat kun dalil recovery robot bekhatere ine ke initial robot ro set nemikuni va bayad toye ye pkg e ino set bokoni vagarna localization dorost nemikune fek kunam-->
 
 </launch>
