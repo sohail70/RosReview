@@ -12,4 +12,5 @@
 10 -> action_custom_msg 
 
 # ROS Navigation Review \ 
-11 -> my_navigation \
+11 -> slam_sim \
+12 -> my_navigation 
