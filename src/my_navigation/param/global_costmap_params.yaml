@@ -8,9 +8,9 @@ global_costmap:
 
   static_map: true
   rolling_window: false
-#  plugins:
-# - {name: static, type: "costmap_2d::StaticLayer"}
-# - {name: inflation, type: "costmap_2d::InflationLayer"}
 
 
-
+  # plugins: 
+  #   - {name: static_layer,         type: "costmap_2d::StaticLayer"}
+  #   - {name: obstacles_layer,      type: "costmap_2d::VoxelLayer"}
+  #   - {name: inflater_layer, type: "costmap_2d::InflationLayer"}

@@ -38,14 +38,16 @@
     <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
     <arg name="move_forward_only" default="false"/>
     <node pkg="move_base" type="move_base" name="move_base" output="screen">
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <!--param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /-->
+        <rosparam file="$(find my_navigation)/param/base_local_planner.yaml" command="load"/>
+
+
         <rosparam file="$(find my_navigation)/param/costmap_common_params_$(arg model).yaml" command="load" ns="global_costmap" />
         <rosparam file="$(find my_navigation)/param/costmap_common_params_$(arg model).yaml" command="load" ns="local_costmap" />
         <rosparam file="$(find my_navigation)/param/local_costmap_params.yaml" command="load" />
         <rosparam file="$(find my_navigation)/param/global_costmap_params.yaml" command="load" />
         <rosparam file="$(find my_navigation)/param/move_base_params.yaml" command="load" />
         <rosparam file="$(find my_navigation)/param/dwa_local_planner_params_$(arg model).yaml" command="load" />
-        
         <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
         
         <rosparam file="$(find my_navigation)/param/base_global_planner.yaml" command="load"/>

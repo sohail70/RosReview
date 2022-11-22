@@ -1,0 +1,4 @@
+# base_local_planner: "base_local_planner/TrajectoryPlannerROS" # Sets the Trajectory Rollout algorithm from base local
+base_local_planner: "dwa_local_planner/DWAPlannerROS" # Sets the dwa local planner
+# base_local_planner: "eband_local_planner/EBandPlannerROS" # Sets the eband local planner
+# base_local_planner: "teb_local_planner/TebLocalPlannerROS" # Sets the teb local planner
