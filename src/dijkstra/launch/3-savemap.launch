@@ -1,0 +1,3 @@
+<launch>
+    <node pkg = "map_server" type="map_saver" name="save" output="screen"   args="-f $(find dijkstra)/map/simple"/>
+</launch>

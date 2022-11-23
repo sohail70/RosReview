@@ -1,0 +1,13 @@
+<launch>
+    <!-- load the map -->
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find dijkstra)/map/simple.yaml"/>
+    
+
+    <!--localization-->
+    <arg name="scan_topic" default="base_scan"/>
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+        <rosparam file="$(find dijkstra)/config/amcl.yaml" command="load"/>
+        <remap from="scan" to="$(arg scan_topic)"/>
+    </node>
+
+</launch>
