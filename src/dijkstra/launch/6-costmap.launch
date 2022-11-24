@@ -1,0 +1,13 @@
+<launch>
+    <node pkg="costmap_2d" type="costmap_2d_node" name="global_costmap">
+        <!-- <remap from="global_costmap/costmap" to="global_costmap"/> -->
+        <rosparam file="$(find dijkstra)/config/global_costmap.yaml" command="load" ns="costmap"/>
+        
+    </node>
+
+    <node pkg="costmap_2d" type="costmap_2d_node" name="local_costmap">
+        <!-- <remap from="global_costmap/costmap" to="global_costmap"/> -->
+        <rosparam file="$(find dijkstra)/config/local_costmap.yaml" command="load" ns="costmap"/>
+    </node>
+
+</launch>

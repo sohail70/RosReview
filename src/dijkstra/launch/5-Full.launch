@@ -1,0 +1,34 @@
+<launch>
+    <!--Gazebo world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch" >
+        <arg name="world_name" value="$(find dijkstra)/include/worlds/simple.world.xml"/>
+    </include>
+
+    <!-- Spawning robot into the specified world -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find dijkstra)/launch/dep/urdf/turtlebot3_waffle.urdf.xacro'"/>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-model tb3 -urdf -param robot_description -x 0.0 -y 0.0 -z 0.0 " />
+
+
+
+    <!--TF for all the joints-->
+    <node pkg = "robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <!-- deghat kun use_tf_static true hast to halat default va agar khate paeen ro nazari az base_link be paeen tf ha dar tf_static publihs mishe ke khoob nist. chun baghie node ha be tf sub zadan na tf_static. dalil in ghazie ine ke in tf ha male joint haye khode robote va sabete vase hamin to tf_Static mizaratesh-->
+        <param name="publish_frequency" type="double" value="30.0"/>
+        <param name="use_tf_static" type="bool" value="false"/>
+        <param name="tf_prefix" type="string" value=""/>
+    </node>
+
+<!-- ********************************************************************************************** -->
+
+    <!-- load the map -->
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find dijkstra)/map/simple.yaml"/>
+    
+
+    <!--localization-->
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+        <rosparam file="$(find dijkstra)/config/amcl.yaml" command="load"/>
+        <remap from="scan" to="base_scan"/>
+    </node>
+<!-- ********************************************************************************************** -->
+
+</launch>

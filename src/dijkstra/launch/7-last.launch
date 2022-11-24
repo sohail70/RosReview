@@ -30,12 +30,11 @@
         <remap from="scan" to="base_scan"/>
     </node>
 <!-- ********************************************************************************************** -->
-    <node pkg="costmap_2d" type="costmap_2d_node" name="costmap" output="screen">
-        <rosparam file="$(find dijkstra)/config/costmap2d.yaml" command="load" ns="costmap" />
-    </node>
 
     <!-- move base -->
-    <!-- <node pkg="move_base" type="move_base" name="move_base" output="screen">
+    <node pkg="move_base" type="move_base" name="move_base" output="screen">
         <remap from="scan" to="base_scan"/>
-    </node> -->
+        <rosparam file="$(find dijkstra)/config/global_costmap.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find dijkstra)/config/local_costmap.yaml" command="load" ns="local_costmap"/>
+    </node>
 </launch>
