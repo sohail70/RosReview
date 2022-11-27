@@ -1,0 +1,5 @@
+ <library path="lib/libmyDijkstra">
+  <class name="global_planner/Dijkstra" type="global_planner::Dijkstra" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>This is a Dijkstra plugin written by Soheil E.nia</description>
+  </class>
+ </library>
