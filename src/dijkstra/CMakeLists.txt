@@ -132,7 +132,7 @@ add_library(myDijkstra
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(testLib src/testLib.cpp)
+add_executable(visualization_test src/visualization_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -142,10 +142,10 @@ add_executable(testLib src/testLib.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(testLib ${testLib_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(visualization_test ${visualization_test_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(testLib
+target_link_libraries(visualization_test
   ${catkin_LIBRARIES}
 )
 
