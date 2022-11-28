@@ -1,0 +1,6 @@
+<launch>
+    <node pkg = "dijkstra" type="testLib" name="testLib" output="screen"/>
+
+
+
+</launch>
