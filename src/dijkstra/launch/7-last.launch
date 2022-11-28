@@ -37,6 +37,6 @@
         <rosparam file="$(find dijkstra)/config/global_costmap.yaml" command="load" ns="global_costmap"/>
         <rosparam file="$(find dijkstra)/config/local_costmap.yaml" command="load" ns="local_costmap"/>
 
-        <param name="base_global_planner"  value="global_planner/Dijkstra"/>
+        <!-- <param name="base_global_planner"  value="global_planner/Dijkstra"/> -->
     </node>
 </launch>
