@@ -9,7 +9,6 @@
 #include<geometry_msgs/PoseStamped.h>
 #include<tf/tf.h>
 
-
 namespace global_planner{
     class Dijkstra: public nav_core::BaseGlobalPlanner
     {
@@ -23,6 +22,8 @@ namespace global_planner{
 
             bool makePlan(const geometry_msgs::PoseStamped& start, 
             const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
+
+            void show();
 
         private:
             std::string name;

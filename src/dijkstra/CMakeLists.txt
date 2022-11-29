@@ -10,6 +10,7 @@ project(dijkstra)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  class_loader
 )
 
 ## System dependencies are found with CMake's conventions
@@ -119,10 +120,16 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+
 ## Declare a C++ library
 add_library(myDijkstra
   src/dijkstra.cpp
 )
+
+add_library(aLib
+  src/aLib.cpp
+)
+# set_target_properties(myDijkstra PROPERTIES IMPORTED_LOCATION /home/sohail/RosReview/devel/lib/libmyDijkstra.so)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -133,6 +140,7 @@ add_library(myDijkstra
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(visualization_test src/visualization_test.cpp)
+add_executable(dijkstraTest src/dijkstraTest.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -143,10 +151,15 @@ add_executable(visualization_test src/visualization_test.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(visualization_test ${visualization_test_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(dijkstraTest ${dijkstraTest_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(visualization_test
   ${catkin_LIBRARIES}
+)
+
+target_link_libraries(dijkstraTest aLib
+  ${catkin_LIBRARIES}  myDijkstra
 )
 
 #############

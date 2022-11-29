@@ -2,7 +2,6 @@
 
 #include<pluginlib/class_list_macros.h>
 #include<Dijkstra.h>
-
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
 
 namespace global_planner{
@@ -21,6 +20,7 @@ namespace global_planner{
 
     bool Dijkstra::makePlan(const geometry_msgs::PoseStamped& start,  const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) 
     {
+        show();
         plan.push_back(start);
         for(int i=0 ; i<10 ; i++)
         {
@@ -41,6 +41,10 @@ namespace global_planner{
         }
         plan.push_back(goal);
         return true;
+    }
+
+    void Dijkstra::show(){
+        ROS_INFO("Dijkstra Algorithm");
     }
 
 }
