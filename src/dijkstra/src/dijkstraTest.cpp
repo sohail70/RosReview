@@ -3,15 +3,19 @@
 #include<ros/ros.h>
 #include <class_loader/class_loader.hpp>
 #include<nav_core/base_global_planner.h>
-#include<Dijkstra.h>
 #include<vector>
 #include<boost/shared_ptr.hpp>
 
-#include<aLib.h>
+#include"CostmapUtility.h"
+#include"Dijkstra.h"
+#include"aLib.h"
+
+
 int main(int argc , char** argv)
 {
     ros::init(argc , argv , "Test");
-
+    ros::NodeHandle nh;
+/********************************************************************************************************/
     class_loader::ClassLoader loader("libmyDijkstra.so");
     std::vector<std::string> classes = loader.getAvailableClasses<nav_core::BaseGlobalPlanner>();
     std::vector<boost::shared_ptr<nav_core::BaseGlobalPlanner>> plugins;
@@ -33,6 +37,8 @@ int main(int argc , char** argv)
     /* Just a test to use a shared library inside my cpp file */
     // aLib a;
     // std::cout<<a.sum(2,3)<<std::endl;
-    
+/********************************************************************************************************/
+
+      
 
 }

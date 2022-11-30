@@ -129,6 +129,11 @@ add_library(myDijkstra
 add_library(aLib
   src/aLib.cpp
 )
+
+
+add_library(costmap_util
+  src/CostmapUtility.cpp
+)
 # set_target_properties(myDijkstra PROPERTIES IMPORTED_LOCATION /home/sohail/RosReview/devel/lib/libmyDijkstra.so)
 
 ## Add cmake target dependencies of the library
@@ -158,8 +163,8 @@ target_link_libraries(visualization_test
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(dijkstraTest aLib
-  ${catkin_LIBRARIES}  myDijkstra
+target_link_libraries(dijkstraTest 
+  ${catkin_LIBRARIES} aLib myDijkstra costmap_util
 )
 
 #############
