@@ -6,7 +6,7 @@ find neighbors
 start goal ---> conversion from poistion to cell indices and vice verca functions  --> follow single responsibility rule ---> mathematical stuff like the conversion should be outside --> maybe in a mapWrapper class to add some functionality to the cost map
 expand
 
-
+remember to create a utility class for visualization
 
 
 */

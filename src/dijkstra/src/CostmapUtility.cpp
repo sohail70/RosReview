@@ -39,3 +39,23 @@ void CostmapUtility::extract()
         }
     }
 }
+
+// x and y position of a center of a grid with index
+geometry_msgs::Point CostmapUtility::cell_to_pose(const int& index)
+{
+    geometry_msgs::Point p;
+    int cell_y = index / this->costmap_ptr->info.width;
+    int cell_x = fmod(index , this->costmap_ptr->info.width);
+    p.x = costmap_ptr->info.origin.position.x + costmap_ptr->info.resolution * cell_x + (costmap_ptr->info.resolution /2);
+    p.y = costmap_ptr->info.origin.position.y + costmap_ptr->info.resolution * cell_y + (costmap_ptr->info.resolution /2);
+
+    return p;
+}
+
+// We have an arbitrary x and y inside of the map w.r.t the odom frame that gazebo creates ---> how can we know which cell this position corresponds to in a 1D array data?
+int CostmapUtility::pose_to_cell(const geometry_msgs::Point& position){
+    int cell_x = (position.x - costmap_ptr->info.origin.position.x)/ this->costmap_ptr->info.resolution;
+    int cell_y = (position.y - costmap_ptr->info.origin.position.y)/ this->costmap_ptr->info.resolution;
+
+    return (cell_y*this->costmap_ptr->info.width + cell_x);
+}

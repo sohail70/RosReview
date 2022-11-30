@@ -1,5 +1,6 @@
 #include<ros/ros.h>
 #include<nav_msgs/OccupancyGrid.h>
+#include<geometry_msgs/Point.h>
 #include<memory>
 #include<vector>
 
@@ -18,6 +19,8 @@ struct GridType{
     std::unique_ptr<std::vector<int>> high_occ_ptr   =  std::make_unique<std::vector<int>>();
 };
 
+
+
 class CostmapUtility
 {
     public:
@@ -26,6 +29,9 @@ class CostmapUtility
 
         void extract();
 
+    
+        geometry_msgs::Point cell_to_pose(const int& index); // give a cell index, tell what is its centers pose
+        int pose_to_cell(const geometry_msgs::Point& position); // given x and y find the index of the cell in the 1D cost map array
 
     private:
         ros::NodeHandle nh;
