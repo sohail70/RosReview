@@ -126,8 +126,8 @@ add_library(myDijkstra
   src/dijkstra.cpp
 )
 
-add_library(aLib
-  src/aLib.cpp
+add_library(PointWrapper
+  src/PointWrapper.cpp
 )
 
 
@@ -164,7 +164,7 @@ target_link_libraries(visualization_test
 )
 
 target_link_libraries(dijkstraTest 
-  ${catkin_LIBRARIES} aLib myDijkstra costmap_util
+  ${catkin_LIBRARIES} PointWrapper myDijkstra costmap_util
 )
 
 #############

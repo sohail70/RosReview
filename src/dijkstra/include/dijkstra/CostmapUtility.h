@@ -31,13 +31,14 @@ class CostmapUtility
 
     
         geometry_msgs::Point cell_to_pose(const int& index); // give a cell index, tell what is its centers pose
-        int pose_to_cell(const geometry_msgs::Point& position); // given x and y find the index of the cell in the 1D cost map array
+        int pose_to_cell(geometry_msgs::Point position); // given x and y find the index of the cell in the 1D cost map array
 
     private:
         ros::NodeHandle nh;
         ros::Subscriber costmap_sub;
         nav_msgs::OccupancyGrid::ConstPtr costmap_ptr;
         GridType gridType;
+        bool map_received;
 
 
 };

@@ -3,6 +3,13 @@
 
 CostmapUtility::CostmapUtility(){
     costmap_sub = nh.subscribe<nav_msgs::OccupancyGrid> ("/move_base/global_costmap/costmap" , 1 ,&CostmapUtility::costmap_callback , this );
+    map_received = false;
+
+    while(map_received==false)
+    {
+        ros::spinOnce();
+        ros::Duration(1).sleep();
+    }
 }
 
 
@@ -10,6 +17,7 @@ CostmapUtility::CostmapUtility(){
 void CostmapUtility::costmap_callback(const nav_msgs::OccupancyGrid::ConstPtr& data)
 {
     this->costmap_ptr = data;
+    map_received = true;
 }
 
 
@@ -53,7 +61,7 @@ geometry_msgs::Point CostmapUtility::cell_to_pose(const int& index)
 }
 
 // We have an arbitrary x and y inside of the map w.r.t the odom frame that gazebo creates ---> how can we know which cell this position corresponds to in a 1D array data?
-int CostmapUtility::pose_to_cell(const geometry_msgs::Point& position){
+int CostmapUtility::pose_to_cell(geometry_msgs::Point position){
     int cell_x = (position.x - costmap_ptr->info.origin.position.x)/ this->costmap_ptr->info.resolution;
     int cell_y = (position.y - costmap_ptr->info.origin.position.y)/ this->costmap_ptr->info.resolution;
 
