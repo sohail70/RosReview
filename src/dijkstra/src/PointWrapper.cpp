@@ -20,9 +20,9 @@ void PointWrapper::addPoint(geometry_msgs::Point point)
 {
     points.points.push_back(point);
 }
-void PointWrapper::deletePoint(int i )
+void PointWrapper::deletePoint(int index)
 {
-    points.points.erase(points.points.begin()+i);
+    points.points.erase(points.points.begin()+index);
 }
 void PointWrapper::publish()
 {

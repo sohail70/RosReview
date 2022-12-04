@@ -45,36 +45,103 @@ int main(int argc , char** argv)
 
 
 /*********************************************/
-    std_msgs::ColorRGBA color; 
-    color.a = 1.0;
-    color.r = 1.0;
+    // std_msgs::ColorRGBA color; 
+    // color.a = 1.0;
+    // color.r = 1.0;
 
-    std_msgs::ColorRGBA color2;
-    color2.a = 1.0;
-    color2.g = 1.0;
+    // std_msgs::ColorRGBA color2;
+    // color2.a = 1.0;
+    // color2.g = 1.0;
     
-    PointWrapper marker(color , std::string("map"));
-    marker.addPoint(p);
-    PointWrapper marker2(color2 , std::string("map"));
+    // PointWrapper marker(color , std::string("map"));
+    // marker.addPoint(p);
+    // PointWrapper marker2(color2 , std::string("map"));
 
-    geometry_msgs::Point p2;
-    p2.x  = 5;
-    p2.y = 0;
-    marker2.addPoint(p2);
-    int i = 0;
+    // geometry_msgs::Point p2;
+    // p2.x  = 5;
+    // p2.y = 0;
+    // marker2.addPoint(p2);
+    // int i = 0;
+    // ros::Rate loop_rate(0.5);
+    // while (ros::ok)
+    // {
+    //     marker.deletePoint(0); 
+    //     p.x = -3 + 0.07*i;
+    //     p.y = -3 + 0.07*i;
+    //     marker.addPoint(p);
+    //     marker.publish();
+    //     marker2.publish();
+    //     ros::spinOnce();
+    //     i++;
+    //     loop_rate.sleep(); 
+    // }
+    
+/*******************************************/
+
+    // std_msgs::ColorRGBA color;
+    // color.a = 1;
+    // color.r = 1;
+
+    // LineStripWrapper marker(color, "map");
+    // geometry_msgs::Point p1,p2,p3,p4;
+    // p1.x = 0;
+    // p1.y = 0;
+    // marker.addPointToLineObject(p1);
+
+    // p2.x = 3;
+    // p2.y = 3;
+    // marker.addPointToLineObject(p2);
+
+    // p3.x = 10;
+    // p3.y = 0;
+    // marker.addPointToLineObject(p3);
+    
+    // p4.x = 15;
+    // p4.y = 4;
+    // marker.addPointToLineObject(p4);
+ 
+
+
+    // ros::Rate loop_rate(0.5);
+    // while(ros::ok())    
+    // {
+    //     marker.publish();
+    //     ros::spinOnce();
+    //     loop_rate.sleep();
+    // }
+
+/************************************************/
+    std_msgs::ColorRGBA color;
+    color.a = 1;
+    color.g = 1;
+    LineListWrapper marker(color , "map");
+
+    geometry_msgs::Point p1,p2,p3,p4;
+
+    p1.x = 0;
+    p1.y = 0;
+    p2.x = 1;
+    p2.y = 1;
+
+    p3.x = 2;
+    p3.y = 2;
+    p4.x = 3;
+    p4.y = 3;
+    // Discontinuous lines
+    marker.addLineSegment(p1,p2);
+    marker.addLineSegment(p3,p4);
+
+    // Continuous lines
+    // marker.addLineSegment(p1,p2);
+    // marker.addLineSegment(p2,p4);
+
     ros::Rate loop_rate(0.5);
-    while (ros::ok)
+
+    while(ros::ok())
     {
-        marker.deletePoint(0); 
-        p.x = -3 + 0.07*i;
-        p.y = -3 + 0.07*i;
-        marker.addPoint(p);
         marker.publish();
-        marker2.publish();
         ros::spinOnce();
-        i++;
-        loop_rate.sleep(); 
+        loop_rate.sleep();
     }
-    
 
 }
