@@ -63,9 +63,11 @@ namespace global_planner{
         private:
             std::string name;
             costmap_2d::Costmap2DROS* costmap_ros;//in va paeeni ye functionality daran faghat paeeni ke man khodam neveshtamesh pose ro ham mide vali be nazar niazi nabode ke nanveshtan chun dar global planner robot ke harkat nemikune ke modhem bashe ghazie
-            CostmapUtility cUtil; // felan bashe age niazi nabood pakesh kun
+            // CostmapUtility cUtil; // be inniazi nist chun worldtomap va func e maptoworld dar costmap2dROS inkaro baramoon mikune
             std::priority_queue<Vertex , std::vector<Vertex> , Order> open_list;
             
+
+            PointWrapper* points;
             
     };
 

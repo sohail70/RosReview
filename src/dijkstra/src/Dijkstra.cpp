@@ -53,13 +53,38 @@ namespace global_planner{
         ROS_ERROR("posex: %f posey: %f",robotPose.pose.position.x , robotPose.pose.position.y);
 
         unsigned int cell_x , cell_y;
-        costmap->indexToCells(511 , cell_x , cell_y); //0--255   256---511   512---(512+256)     a----(a+map.width)
+        costmap->indexToCells(511 , cell_x , cell_y); //0--255   256---511   512---(512+256)     a---(a+map.width)
         ROS_ERROR("cell_x: %i  cell_y: %i" , cell_x , cell_y);
 
-        ROS_ERROR("POSE X: %f POSE Y: %f",cUtil.cell_to_pose(511).x , cUtil.cell_to_pose(511).y);
+        // ROS_ERROR("POSE X: %f POSE Y: %f",cUtil.cell_to_pose(511).x , cUtil.cell_to_pose(511).y);
 
-        costmap->worldToMap(start.pose.position.x , start.pose.position.y ,cell_x , cell_y );
+        costmap->worldToMap(robotPose.pose.position.x , robotPose.pose.position.y ,cell_x , cell_y );
         ROS_ERROR("Start cell x :  %i Start cell y: %i" , cell_x , cell_y);
+
+
+        std_msgs::ColorRGBA color; color.a = 1; color.g = 1;
+        
+        ros::Rate loop_rate(1);
+
+        points = new PointWrapper(color,"map");
+        while(ros::ok())
+        {
+            
+            costmap_ros->getRobotPose(robotPose);
+            costmap->worldToMap(robotPose.pose.position.x , robotPose.pose.position.y ,cell_x , cell_y );
+            geometry_msgs::Point p;
+            costmap->mapToWorld(cell_x , cell_y , p.x , p.y);
+            points->addPoint(p);
+            points->publish();
+            ROS_ERROR("PUBLISHING POINTS");
+            ros::spinOnce();
+            loop_rate.sleep();
+
+        }
+
+        delete points;
+
+        
     /*************************************************************************************************************/
         
         return true;

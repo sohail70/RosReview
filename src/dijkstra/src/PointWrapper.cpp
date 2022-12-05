@@ -8,8 +8,8 @@ PointWrapper::PointWrapper(std_msgs::ColorRGBA color , std::string frame_id ){
     points.pose.orientation.w = 1.0;
     points.id = id;
     points.action = visualization_msgs::Marker::ADD;
-    points.scale.x = 0.5;
-    points.scale.y = 0.5;
+    points.scale.x = 0.1;
+    points.scale.y = 0.1;
     points.type = visualization_msgs::Marker::POINTS;
 
     id++;
