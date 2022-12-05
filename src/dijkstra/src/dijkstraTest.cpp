@@ -10,6 +10,12 @@
 #include"Dijkstra.h"
 
 
+
+nav_msgs::OccupancyGrid costmap;
+void costmap_callback(const nav_msgs::OccupancyGrid::ConstPtr& data)
+{
+    costmap = *data;
+}
 int main(int argc , char** argv)
 {
     ros::init(argc , argv , "Test");
@@ -29,25 +35,39 @@ int main(int argc , char** argv)
 
     auto dijkstra_object = dynamic_cast<global_planner::Dijkstra*>(base_object.get());
     dijkstra_object->show();
+    geometry_msgs::PoseStamped start , goal;
+    start.pose.position.x = 0;
+    start.pose.position.y = 0;
+    start.pose.orientation.w = 1;
+    goal.pose.position.x = 0;
+    goal.pose.position.y = 0;
+    goal.pose.orientation.w = 1;
 
-
+    std::vector<geometry_msgs::PoseStamped> plan;
+    ros::Subscriber costmap_sub = nh.subscribe<nav_msgs::OccupancyGrid>("/move_base/global_costmap/costmap",1 , &costmap_callback);
+    ros::Rate loop_rate(1);
+    while(ros::ok())
+    {   
+        dijkstra_object->makePlan(start,goal,plan);
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
 
 
 /********************************************************************************************************/
 
-    CostmapUtility costmap_util;
-    geometry_msgs::Point p ;
-    p.x = 22.6;
-    p.y = -3;
-    auto index =  costmap_util.pose_to_cell(p);
-    ROS_INFO("index: %i", index);
+    // CostmapUtility costmap_util;
+    // geometry_msgs::Point p ;
+    // p.x = 22.6;
+    // p.y = -3;
+    // auto index =  costmap_util.pose_to_cell(p);
+    // ROS_INFO("index: %i", index);
 
 
 /******************Point Wrapper test***************************/
     // std_msgs::ColorRGBA color; 
     // color.a = 1.0;
     // color.r = 1.0;
-
     // std_msgs::ColorRGBA color2;
     // color2.a = 1.0;
     // color2.g = 1.0;
@@ -110,39 +130,39 @@ int main(int argc , char** argv)
     // }
 
 /***************Line List Wrapper test*********************************/
-    std_msgs::ColorRGBA color;
-    color.a = 1;
-    color.g = 1;
-    LineListWrapper marker(color , "map");
+//     std_msgs::ColorRGBA color;
+//     color.a = 1;
+//     color.g = 1;
+//     LineListWrapper marker(color , "map");
 
-    geometry_msgs::Point p1,p2,p3,p4;
+//     geometry_msgs::Point p1,p2,p3,p4;
 
-    p1.x = 0;
-    p1.y = 0;
-    p2.x = 1;
-    p2.y = 1;
+//     p1.x = 0;
+//     p1.y = 0;
+//     p2.x = 1;
+//     p2.y = 1;
 
-    p3.x = 2;
-    p3.y = 2;
-    p4.x = 3;
-    p4.y = 3;
-    // Discontinuous lines
-    marker.addLineSegment(p1,p2);
-    marker.addLineSegment(p3,p4);
+//     p3.x = 2;
+//     p3.y = 2;
+//     p4.x = 3;
+//     p4.y = 3;
+//     // Discontinuous lines
+//     marker.addLineSegment(p1,p2);
+//     marker.addLineSegment(p3,p4);
 
-    // Continuous lines
-    // marker.addLineSegment(p1,p2);
-    // marker.addLineSegment(p2,p4);
+//     // Continuous lines
+//     // marker.addLineSegment(p1,p2);
+//     // marker.addLineSegment(p2,p4);
 
-    ros::Rate loop_rate(0.5);
+//     ros::Rate loop_rate(0.5);
 
-    while(ros::ok())
-    {
-        marker.publish();
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
-/*****************DIJKSTRA TEST******************************/
+//     while(ros::ok())
+//     {
+//         marker.publish();
+//         ros::spinOnce();
+//         loop_rate.sleep();
+//     }
+// /*****************DIJKSTRA TEST******************************/
 
 
 

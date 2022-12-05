@@ -7,6 +7,7 @@ CostmapUtility::CostmapUtility(){
 
     while(map_received==false)
     {
+        ROS_ERROR("SPINNING");
         ros::spinOnce();
         ros::Duration(1).sleep();
     }

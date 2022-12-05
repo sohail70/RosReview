@@ -1,3 +1,6 @@
+#ifndef COSTMAP_UTILITY
+#define COSTMAP_UTILITY
+
 #include<ros/ros.h>
 #include<nav_msgs/OccupancyGrid.h>
 #include<geometry_msgs/Point.h>
@@ -42,3 +45,5 @@ class CostmapUtility
 
 
 };
+
+#endif

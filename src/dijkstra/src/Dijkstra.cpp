@@ -12,11 +12,14 @@ namespace global_planner{
     Dijkstra::Dijkstra(std::string name_ , costmap_2d::Costmap2DROS* costmap_ros)
     {
         initialize(name,costmap_ros);
+
     }
 
 
     void Dijkstra::initialize(std::string name , costmap_2d::Costmap2DROS* costmap_ros)
-    {}
+    {
+        this->costmap_ros = costmap_ros;
+    }
 
     bool Dijkstra::makePlan(const geometry_msgs::PoseStamped& start,  const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) 
     {
@@ -41,20 +44,25 @@ namespace global_planner{
         // }
         // plan.push_back(goal);
         // return true;
+    /*******************************Testing the costmap 2d ros functions*****************************************/
+        ROS_INFO("myDIJKSTRA planning a route from start pose to goal pose ... ");
+        // ROS_ERROR("EROOOR %s" ,costmap->getName().c_str());
+        geometry_msgs::PoseStamped robotPose;
+        costmap_ros->getRobotPose(robotPose);  //ino dar cmake yadet nare be library myDijkstra ---> /opt/ros/noetic/lib/libcostmap_2d.so --> alabte vase func e getname niazi be in nist chun functionality ye seri ha dar header tarif shode 
+        auto costmap  = costmap_ros->getCostmap();
+        ROS_ERROR("posex: %f posey: %f",robotPose.pose.position.x , robotPose.pose.position.y);
 
-    /************************************************************************/
+        unsigned int cell_x , cell_y;
+        costmap->indexToCells(511 , cell_x , cell_y); //0--255   256---511   512---(512+256)     a----(a+map.width)
+        ROS_ERROR("cell_x: %i  cell_y: %i" , cell_x , cell_y);
 
-        std_msgs::ColorRGBA color;
-        color.a = 1; color.b=1;
-        PointWrapper points(color, "map");
-        auto start_point = geometry_msgs::Point(start.pose.position);
-        auto end_point = geometry_msgs::Point(goal.pose.position);
-        points.addPoint(start_point); points.addPoint(end_point);
+        ROS_ERROR("POSE X: %f POSE Y: %f",cUtil.cell_to_pose(511).x , cUtil.cell_to_pose(511).y);
 
+        costmap->worldToMap(start.pose.position.x , start.pose.position.y ,cell_x , cell_y );
+        ROS_ERROR("Start cell x :  %i Start cell y: %i" , cell_x , cell_y);
+    /*************************************************************************************************************/
+        
         return true;
-
-
-       
     }
 
     void Dijkstra::show(){

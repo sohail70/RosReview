@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   class_loader
+  costmap_2d
 )
 
 ## System dependencies are found with CMake's conventions
@@ -134,7 +135,7 @@ add_library(costmap_util
   src/CostmapUtility.cpp
 )
 
-target_link_libraries(myDijkstra PointWrapper) #myDijkstra library needs PointsWrapper library
+target_link_libraries(myDijkstra PointWrapper /opt/ros/noetic/lib/libcostmap_2d.so costmap_util) #myDijkstra library needs PointsWrapper library
 # set_target_properties(myDijkstra PROPERTIES IMPORTED_LOCATION /home/sohail/RosReview/devel/lib/libmyDijkstra.so)
 
 ## Add cmake target dependencies of the library
