@@ -120,10 +120,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
 ## Declare a C++ library
 add_library(myDijkstra
-  src/dijkstra.cpp
+  src/Dijkstra.cpp
 )
 
 add_library(PointWrapper
@@ -134,6 +133,8 @@ add_library(PointWrapper
 add_library(costmap_util
   src/CostmapUtility.cpp
 )
+
+target_link_libraries(myDijkstra PointWrapper) #myDijkstra library needs PointsWrapper library
 # set_target_properties(myDijkstra PROPERTIES IMPORTED_LOCATION /home/sohail/RosReview/devel/lib/libmyDijkstra.so)
 
 ## Add cmake target dependencies of the library

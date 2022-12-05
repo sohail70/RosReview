@@ -23,6 +23,10 @@ remember to create a utility class for visualization
 #include<nav_core/base_global_planner.h>
 #include<geometry_msgs/PoseStamped.h>
 #include<tf/tf.h>
+#include<queue>
+
+
+#include"PointWrapper.h"
 
 namespace global_planner{
     class Dijkstra: public nav_core::BaseGlobalPlanner

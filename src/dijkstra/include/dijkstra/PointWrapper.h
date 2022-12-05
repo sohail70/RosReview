@@ -1,3 +1,6 @@
+#ifndef VISUALIZATION_WRAPPER
+#define VISUALIZATION_WRAPPER
+
 #include<ros/ros.h>
 #include<iostream>
 #include<visualization_msgs/Marker.h>
@@ -104,3 +107,5 @@ class LineListWrapper{
         static int id;
 };
 int LineListWrapper::id = 0;
+
+#endif

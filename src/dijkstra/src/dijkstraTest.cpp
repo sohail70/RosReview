@@ -8,7 +8,6 @@
 
 #include"CostmapUtility.h"
 #include"Dijkstra.h"
-#include"PointWrapper.h"
 
 
 int main(int argc , char** argv)
@@ -44,7 +43,7 @@ int main(int argc , char** argv)
     ROS_INFO("index: %i", index);
 
 
-/*********************************************/
+/******************Point Wrapper test***************************/
     // std_msgs::ColorRGBA color; 
     // color.a = 1.0;
     // color.r = 1.0;
@@ -76,7 +75,7 @@ int main(int argc , char** argv)
     //     loop_rate.sleep(); 
     // }
     
-/*******************************************/
+/***************Line Strip Wrapper test****************************/
 
     // std_msgs::ColorRGBA color;
     // color.a = 1;
@@ -110,7 +109,7 @@ int main(int argc , char** argv)
     //     loop_rate.sleep();
     // }
 
-/************************************************/
+/***************Line List Wrapper test*********************************/
     std_msgs::ColorRGBA color;
     color.a = 1;
     color.g = 1;
@@ -143,5 +142,9 @@ int main(int argc , char** argv)
         ros::spinOnce();
         loop_rate.sleep();
     }
+/*****************DIJKSTRA TEST******************************/
+
+
+
 
 }
