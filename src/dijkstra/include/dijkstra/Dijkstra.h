@@ -48,13 +48,15 @@ remember to create a utility class for visualization
 
 namespace global_planner{
 
+    enum class status{UNCHECKED , OPEN , CLOSE};
     struct Vertex{
+        int status;
         float g_value;
         unsigned int cell_x;
         unsigned int cell_y;
         Vertex* parent;
 
-        bool operator==(const Vertex& other) const //const ro nazari static_assert error mide
+        bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
         {
             return g_value == other.g_value;
         }
@@ -94,13 +96,15 @@ namespace global_planner{
             const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
 
             void show();
-            void neighborsToList(Vertex current_node);
+            void neighborsIntoList(Vertex current_node);
+            bool boundaryCheck(int cell_x , int cell_y);
+            bool statusCheck(int status);
         private:
             std::string name;
             costmap_2d::Costmap2DROS* costmap_ros;//in va paeeni ye functionality daran faghat paeeni ke man khodam neveshtamesh pose ro ham mide vali be nazar niazi nabode ke nanveshtan chun dar global planner robot ke harkat nemikune ke modhem bashe ghazie
             // CostmapUtility cUtil; // be inniazi nist chun worldtomap va func e maptoworld dar costmap2dROS inkaro baramoon mikune
             std::priority_queue<Vertex , std::vector<Vertex> , Order> open_list;
-            std::unordered_set<Vertex,MyHash> closed_list; 
+            std::unordered_multiset<Vertex,MyHash> closed_list; 
 
             PointWrapper* points;
             

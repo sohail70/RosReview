@@ -5,6 +5,7 @@
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
 
 namespace global_planner{
+
     Dijkstra::Dijkstra(){
         std::cout<<"Constructor \n";
 
@@ -62,17 +63,17 @@ namespace global_planner{
         // ROS_ERROR("Start cell x :  %i Start cell y: %i" , cell_x , cell_y);
 
 
-        // std_msgs::ColorRGBA color; color.a = 1; color.g = 1;
+        std_msgs::ColorRGBA color; color.a = 1; color.g = 1;
         
         // ros::Rate loop_rate(1);
 
-        // points = new PointWrapper(color,"map");
+        points = new PointWrapper(color,"map");
         // while(ros::ok())
         // {
             
         //     costmap_ros->getRobotPose(robotPose);
         //     costmap->worldToMap(robotPose.pose.position.x , robotPose.pose.position.y ,cell_x , cell_y );
-        //     geometry_msgs::Point p;
+            geometry_msgs::Point p;
         //     costmap->mapToWorld(cell_x , cell_y , p.x , p.y);
         //     points->addPoint(p);
         //     points->publish();
@@ -96,17 +97,41 @@ namespace global_planner{
         open_list.push(start_node);
         Vertex current_node;
         std::vector<Vertex> current_neighbors;        
-
-        ros::Rate loop_rate(1);
+        // auto size_x = costmap_ros->getCostmap()->getSizeInCellsX(); // width of the map (as in # of cells in y direction)
+        // auto size_y = costmap_ros->getCostmap()->getSizeInCellsY(); // height of the map (as in # of cells in x direction)
+        // ROS_ERROR("ASDASDASD %i ASDASD %i" , size_x, size_y);
+        ROS_ERROR("STARTING DIJKSTRA");
+        ros::Rate loop_rate(20);
+        
         while(ros::ok() || current_node != goal_node)
         {
+            // ROS_ERROR("IN THE WHILE LOOP");
             current_node  = open_list.top();
-            neighborsToList(current_node);
+            current_node.status = static_cast<int>(global_planner::status::OPEN);
+
+            costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , p.x , p.y);
+            points->addPoint(p);
+            points->publish();
+
+            ROS_ERROR("Cell_x: %i Cell_y: %i" ,current_node.cell_x , current_node.cell_y );
+            current_node  = open_list.top();
+            neighborsIntoList(current_node);
             open_list.pop();
             closed_list.insert(current_node);
-            
-        }         
+            current_node.status = static_cast<int>(global_planner::status::CLOSE);
+            loop_rate.sleep(); 
+            // points->deletePoint(0);
+        }        
+        delete points; 
 
+        geometry_msgs::PoseStamped pose;     
+        pose.pose.orientation.w = 1;
+        current_node = goal_node; 
+        while(current_node != start_node)
+        {
+            costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , pose.pose.position.x , pose.pose.position.y);
+            plan.push_back(pose);         
+        }
         
         
         return true;
@@ -116,34 +141,68 @@ namespace global_planner{
         ROS_INFO("Dijkstra Algorithm");
     }
 
-    void Dijkstra::neighborsToList(Vertex current_node) 
+    void Dijkstra::neighborsIntoList(Vertex current_node) 
     {
         // right
-        if( costmap_ros->getCostmap()->getCost(current_node.cell_x + 1 , current_node.cell_y) ==costmap_2d::FREE_SPACE) // age cell_x va cell_y < 0 beshe irad dare pas badan ye check bezar bara in
+        if( boundaryCheck(current_node.cell_x+1 , current_node.cell_y ) && costmap_ros->getCostmap()->getCost(current_node.cell_x + 1 , current_node.cell_y) ==costmap_2d::FREE_SPACE) // age cell_x va cell_y < 0 beshe irad dare pas badan ye check bezar bara in
         {
             Vertex v;v.cell_x = current_node.cell_x+1; v.cell_y = current_node.cell_y ; v.parent= &current_node; v.g_value = current_node.g_value+1;
-            open_list.push(v);
+            if(statusCheck(v.status))
+            {
+                open_list.push(v);
+            } 
         }
         // up
-        if(costmap_ros->getCostmap()->getCost(current_node.cell_x , current_node.cell_y + 1) == costmap_2d::FREE_SPACE)
+        if( boundaryCheck(current_node.cell_x , current_node.cell_y+1) && costmap_ros->getCostmap()->getCost(current_node.cell_x , current_node.cell_y + 1) == costmap_2d::FREE_SPACE)
         {
             Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y+1 ; v.parent = &current_node; v.g_value = current_node.g_value+1;
-            open_list.push(v);
+            if(statusCheck(v.status))
+            {
+                open_list.push(v);
+            }
         }
         // left
-        if(costmap_ros->getCostmap()->getCost(current_node.cell_x - 1 , current_node.cell_y) == costmap_2d::FREE_SPACE)
+        if( boundaryCheck(current_node.cell_x - 1 , current_node.cell_y) && costmap_ros->getCostmap()->getCost(current_node.cell_x - 1 , current_node.cell_y) == costmap_2d::FREE_SPACE)
         {
             Vertex v;v.cell_x = current_node.cell_x-1; v.cell_y = current_node.cell_y ; v.parent = &current_node; v.g_value = current_node.g_value+1;
-            open_list.push(v);
+            if(statusCheck(v.status))
+            {
+                open_list.push(v);
+            }
         }
         // down
-        if(costmap_ros->getCostmap()->getCost(current_node.cell_x  , current_node.cell_y - 1)== costmap_2d::FREE_SPACE)
+        if( boundaryCheck(current_node.cell_x , current_node.cell_y - 1) && costmap_ros->getCostmap()->getCost(current_node.cell_x  , current_node.cell_y - 1)== costmap_2d::FREE_SPACE)
         {
             Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y-1 ; v.parent = &current_node; v.g_value = current_node.g_value+1; 
-            open_list.push(v);
+            if(statusCheck(v.status))
+            {
+                open_list.push(v);
+            }
         }
     }
 
+    bool Dijkstra::boundaryCheck(int cell_x  ,int cell_y )
+    {
+        if (cell_x > costmap_ros->getCostmap()->getSizeInCellsX() ||
+            cell_x < 0 ||
+            cell_y > costmap_ros->getCostmap()->getSizeInCellsY() ||
+            cell_y < 0)
+            {return false;} 
+        else
+            {return true;}
+            
+    }
 
+    bool Dijkstra::statusCheck(int status)
+    {
+        if(status == static_cast<int>(global_planner::status::CLOSE))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
