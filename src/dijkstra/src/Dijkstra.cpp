@@ -88,19 +88,20 @@ namespace global_planner{
         
     /************************************Dijkstra implementation*************************************************************************/
         
-        Vertex goal_node;
-        Vertex start_node; start_node.g_value = 0;
+        Vertex goal_node; goal_node.status=static_cast<int>(global_planner::status::UNCHECKED);
+        Vertex start_node; start_node.g_value = 0; start_node.parent = nullptr;
         costmap_ros->getCostmap()->worldToMap(goal.pose.position.x , goal.pose.position.y ,goal_node.cell_x ,goal_node.cell_y ); 
         costmap_ros->getCostmap()->worldToMap(start.pose.position.x , start.pose.position.y ,start_node.cell_x , start_node.cell_y);
 
 
         open_list.push(start_node);
+ 
         Vertex current_node;
         std::vector<Vertex> current_neighbors;        
         // auto size_x = costmap_ros->getCostmap()->getSizeInCellsX(); // width of the map (as in # of cells in y direction)
         // auto size_y = costmap_ros->getCostmap()->getSizeInCellsY(); // height of the map (as in # of cells in x direction)
         // ROS_ERROR("ASDASDASD %i ASDASD %i" , size_x, size_y);
-        ROS_ERROR("STARTING DIJKSTRA");
+        // ROS_ERROR("STARTING DIJKSTRA");
         ros::Rate loop_rate(20);
         
         while(ros::ok() || current_node != goal_node)
@@ -114,7 +115,6 @@ namespace global_planner{
             points->publish();
 
             ROS_ERROR("Cell_x: %i Cell_y: %i" ,current_node.cell_x , current_node.cell_y );
-            current_node  = open_list.top();
             neighborsIntoList(current_node);
             open_list.pop();
             closed_list.insert(current_node);
@@ -132,8 +132,39 @@ namespace global_planner{
             costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , pose.pose.position.x , pose.pose.position.y);
             plan.push_back(pose);         
         }
+        ////////////////////////////////////////////////////////
+        // ROS_ERROR("DIJKSTRA COMING THROUGH");
+        // unsigned int width =  costmap_ros->getCostmap()->getSizeInCellsX();
+        // unsigned int height = costmap_ros->getCostmap()->getSizeInCellsY();
+
         
-        
+        // Vertex v;
+        // for (unsigned int i = 0 ; i< width ; i++)
+        // {
+        //     for(unsigned int j = 0 ; j <height ; j++)
+        //     {
+        //         if(i == start_node.cell_x && j == start_node.cell_y)
+        //             continue;
+            
+        //         v.cell_x = i ; v.cell_y = j ; v.g_value = std::numeric_limits<float>::infinity(); v.parent = nullptr;
+        //         if (costmap_ros->getCostmap()->getCost(i,j)==costmap_2d::FREE_SPACE)
+        //             v.cost = 0;
+        //         else if (costmap_ros->getCostmap()->getCost(i,j)==costmap_2d::NO_INFORMATION)
+        //             v.cost = -1;
+        //         else
+        //             v.cost = 1;
+
+        //         open_list.push(v);
+        //     }
+        // }
+
+        // while(!open_list.empty())
+        // {
+        //     current_node = open_list.top();
+        //     open_list.pop();
+        //     // validNeighbors()
+        // }
+         
         return true;
     }
 
@@ -143,40 +174,69 @@ namespace global_planner{
 
     void Dijkstra::neighborsIntoList(Vertex current_node) 
     {
+        
         // right
         if( boundaryCheck(current_node.cell_x+1 , current_node.cell_y ) && costmap_ros->getCostmap()->getCost(current_node.cell_x + 1 , current_node.cell_y) ==costmap_2d::FREE_SPACE) // age cell_x va cell_y < 0 beshe irad dare pas badan ye check bezar bara in
         {
-            Vertex v;v.cell_x = current_node.cell_x+1; v.cell_y = current_node.cell_y ; v.parent= &current_node; v.g_value = current_node.g_value+1;
-            if(statusCheck(v.status))
+            int right_cell_x = current_node.cell_x+1;
+            int right_cell_y = current_node.cell_y;
+
+            auto iter = std::find_if(closed_list.begin() , closed_list.end() , [right_cell_x , right_cell_y](Vertex v){return (v.cell_x == right_cell_x && v.cell_y==right_cell_y); });
+            if (iter == closed_list.end())
             {
-                open_list.push(v);
-            } 
+                Vertex v;v.cell_x = current_node.cell_x+1; v.cell_y = current_node.cell_y ; v.parent= &current_node; v.g_value = current_node.g_value+1;
+                if(statusCheck(v.status))
+                {
+                    open_list.push(v);
+                } 
+            }
         }
         // up
         if( boundaryCheck(current_node.cell_x , current_node.cell_y+1) && costmap_ros->getCostmap()->getCost(current_node.cell_x , current_node.cell_y + 1) == costmap_2d::FREE_SPACE)
         {
-            Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y+1 ; v.parent = &current_node; v.g_value = current_node.g_value+1;
-            if(statusCheck(v.status))
+            int up_cell_x = current_node.cell_x;
+            int up_cell_y = current_node.cell_y+1;
+
+            auto iter = std::find_if(closed_list.begin() , closed_list.end() , [up_cell_x , up_cell_y](Vertex v){return (v.cell_x == up_cell_x && v.cell_y==up_cell_y); });
+            if (iter == closed_list.end())
             {
-                open_list.push(v);
+                Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y+1 ; v.parent = &current_node; v.g_value = current_node.g_value+1; 
+                if(statusCheck(v.status))
+                {
+                    open_list.push(v);
+                }
             }
         }
         // left
         if( boundaryCheck(current_node.cell_x - 1 , current_node.cell_y) && costmap_ros->getCostmap()->getCost(current_node.cell_x - 1 , current_node.cell_y) == costmap_2d::FREE_SPACE)
         {
-            Vertex v;v.cell_x = current_node.cell_x-1; v.cell_y = current_node.cell_y ; v.parent = &current_node; v.g_value = current_node.g_value+1;
-            if(statusCheck(v.status))
+            int left_cell_x = current_node.cell_x-1;
+            int left_cell_y = current_node.cell_y;
+
+            auto iter = std::find_if(closed_list.begin() , closed_list.end() , [left_cell_x , left_cell_y](Vertex v){return (v.cell_x == left_cell_x && v.cell_y==left_cell_y); });
+            if (iter == closed_list.end())
             {
-                open_list.push(v);
+                Vertex v;v.cell_x = current_node.cell_x-1; v.cell_y = current_node.cell_y ; v.parent = &current_node; v.g_value = current_node.g_value+1;
+                if(statusCheck(v.status))
+                {
+                    open_list.push(v);
+                }
             }
         }
         // down
         if( boundaryCheck(current_node.cell_x , current_node.cell_y - 1) && costmap_ros->getCostmap()->getCost(current_node.cell_x  , current_node.cell_y - 1)== costmap_2d::FREE_SPACE)
         {
-            Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y-1 ; v.parent = &current_node; v.g_value = current_node.g_value+1; 
-            if(statusCheck(v.status))
+            int down_cell_x = current_node.cell_x;
+            int down_cell_y = current_node.cell_y-1;
+
+            auto iter = std::find_if(closed_list.begin() , closed_list.end() , [down_cell_x , down_cell_y](Vertex v){return (v.cell_x == down_cell_x && v.cell_y==down_cell_y); });
+            if (iter == closed_list.end())
             {
-                open_list.push(v);
+                Vertex v;v.cell_x = current_node.cell_x; v.cell_y = current_node.cell_y-1 ; v.parent = &current_node; v.g_value = current_node.g_value+1; 
+                if(statusCheck(v.status))
+                {
+                    open_list.push(v);
+                }
             }
         }
     }

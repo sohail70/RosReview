@@ -49,13 +49,15 @@ remember to create a utility class for visualization
 namespace global_planner{
 
     enum class status{UNCHECKED , OPEN , CLOSE};
+    
     struct Vertex{
         int status;
+        int cost;
         float g_value;
         unsigned int cell_x;
         unsigned int cell_y;
         Vertex* parent;
-
+        std::vector<Vertex> neighbors;
         bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
         {
             return g_value == other.g_value;
@@ -107,6 +109,10 @@ namespace global_planner{
             std::unordered_multiset<Vertex,MyHash> closed_list; 
 
             PointWrapper* points;
+
+
+            std::vector<double> distance;
+            std::vector<unsigned int> parent;
             
     };
 
