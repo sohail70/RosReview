@@ -101,18 +101,22 @@ namespace global_planner{
             void neighborsIntoList(Vertex current_node);
             bool boundaryCheck(int cell_x , int cell_y);
             bool statusCheck(int status);
+
+            void validNeighbors(Vertex current_node , std::vector<int>& indices);
         private:
             std::string name;
             costmap_2d::Costmap2DROS* costmap_ros;//in va paeeni ye functionality daran faghat paeeni ke man khodam neveshtamesh pose ro ham mide vali be nazar niazi nabode ke nanveshtan chun dar global planner robot ke harkat nemikune ke modhem bashe ghazie
             // CostmapUtility cUtil; // be inniazi nist chun worldtomap va func e maptoworld dar costmap2dROS inkaro baramoon mikune
             std::priority_queue<Vertex , std::vector<Vertex> , Order> open_list;
             std::unordered_multiset<Vertex,MyHash> closed_list; 
-
+            std::unordered_multiset<Vertex,MyHash> visited_list; 
             PointWrapper* points;
 
 
             std::vector<double> distance;
             std::vector<unsigned int> parent;
+
+            std::vector<std::pair<double, Vertex*>> g_value_parent_pair;
             
     };
 
