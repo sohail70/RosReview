@@ -141,47 +141,56 @@ namespace global_planner{
 
         
         Vertex v;
-        for (unsigned int i = 0 ; i< width ; i++)
+        for (unsigned int i = 0 ; i< height ; i++)
         {
-            for(unsigned int j = 0 ; j <height ; j++)
+            for(unsigned int j = 0 ; j <width ; j++)
             {
-                if(i == start_node.cell_x && j == start_node.cell_y)
+                if(i == start_node.cell_y && j == start_node.cell_x)
+                {
+                    g_value_parent_pair.push_back(std::make_pair(0 ,nullptr ));
                     continue;
-                ROS_ERROR("i:%i j: %i" , v.cell_x , v.cell_y);
-
-                v.cell_x = i ; v.cell_y = j; v.g_value = std::numeric_limits<float>::infinity();
+                }
                 g_value_parent_pair.push_back(std::make_pair(std::numeric_limits<float>::infinity() ,nullptr ));
-                if (costmap_ros->getCostmap()->getCost(i,j)==costmap_2d::FREE_SPACE)
-                    v.cost = 0;
-                else if (costmap_ros->getCostmap()->getCost(i,j)==costmap_2d::NO_INFORMATION)
-                    v.cost = -1;
-                else
-                    v.cost = 1;
-
-                open_list.push(v);
             }
         }
         ROS_ERROR("BEFORE WHILE");
         double dist_to_current_node = 1;
         ros::Rate loop_rate(100);
-        while(ros::ok() && !open_list.empty())
+        bool reached = false;
+
+        std::vector<Vertex> cur;
+        cur.resize(32768);
+        while(ros::ok() && !open_list.empty() && !reached)
         {
             current_node = open_list.top();
+            if (current_node.cell_x == goal_node.cell_x && current_node.cell_y == goal_node.cell_y)
+                break;
             // ROS_ERROR("INTO THE WHILE: i: %i , j:%i" , current_node.cell_x , current_node.cell_y);
 
             open_list.pop();
             validNeighbors(current_node , valid_neighbors_indices);
-            for(auto ind : valid_neighbors_indices)
+            for(auto& ind : valid_neighbors_indices)
             {
                 if( current_node.g_value + dist_to_current_node  < g_value_parent_pair.at(ind).first)
                 {
-                    g_value_parent_pair.at(ind).first = current_node.g_value + dist_to_current_node;
-                    g_value_parent_pair.at(ind).second = &current_node;
                     
-                    Vertex v;
+                    cur[ind] = (current_node);
+                    g_value_parent_pair.at(ind).first = current_node.g_value + dist_to_current_node;
+                    g_value_parent_pair.at(ind).second = &cur[ind];
+                    unsigned int n_cell_x , n_cell_y;
+                    costmap_ros->getCostmap()->indexToCells(ind, n_cell_x , n_cell_y);
+                    ROS_ERROR("parent for: %i,%i is cell %i,%i" ,n_cell_x ,n_cell_y , g_value_parent_pair.at(ind).second->cell_x ,g_value_parent_pair.at(ind).second->cell_y ) ;
+                    
                     costmap_ros->getCostmap()->indexToCells(ind , v.cell_x , v.cell_y);
-                    v.g_value = current_node.g_value + dist_to_current_node; v.parent = &current_node;
+                    v.g_value = current_node.g_value + dist_to_current_node; v.parent = &cur[ind];
                     open_list.push(v);
+
+                    // if (n_cell_x == goal_node.cell_x && n_cell_y==goal_node.cell_y)
+                    // {
+                    //     current_node = goal_node; 
+                    //     reached = true;
+                    //     break;
+                    // }
                 }
             }
 
@@ -189,9 +198,39 @@ namespace global_planner{
             points->addPoint(p);
             points->publish();
 
+            ros::spinOnce();
             loop_rate.sleep();
         }
-         
+        //57-34  
+        std::vector<Vertex> path;
+        ros::Rate loop_rate_2(10);
+        int index;
+        geometry_msgs::PoseStamped pos;
+        pos.pose.orientation.w = 1;
+        pos.header.frame_id="map";
+        while(true)
+        // while(current_node.parent==nullptr)
+        {
+            ROS_ERROR("PATH: %i-%i ",current_node.cell_x , current_node.cell_y);
+            index = costmap_ros->getCostmap()->getIndex(current_node.cell_x , current_node.cell_y); 
+            ROS_ERROR("INDEX: %i", index);
+            costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , pos.pose.position.x , pos.pose.position.y); 
+            plan.push_back(pos);
+            path.push_back(current_node);
+            ROS_ERROR("PUSHED");
+            current_node = *g_value_parent_pair.at(index).second;
+            ROS_ERROR("CURRENT_SET");
+            if ((current_node.cell_x==start_node.cell_x) && (current_node.cell_y == start_node.cell_y))
+            {
+                ROS_ERROR("REACHED STARTING POINT");
+                break;
+            }
+            ros::spinOnce();
+            loop_rate_2.sleep();
+        }
+        path.push_back(start_node);
+        std::reverse(path.begin() , path.end());
+        std::reverse(plan.begin() , plan.end()); 
         ROS_ERROR("ENNNNNNNNNNNNNNNND");
         return true;
     }

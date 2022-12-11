@@ -54,8 +54,8 @@ namespace global_planner{
         int status;
         int cost;
         float g_value;
-        unsigned int cell_x;
-        unsigned int cell_y;
+        unsigned int cell_x = 1000;
+        unsigned int cell_y = 1000;
         Vertex* parent;
         std::vector<Vertex> neighbors;
         bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
