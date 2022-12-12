@@ -4,6 +4,7 @@
 
 // Bug : if the robot is in the danger zone the start point can not expand and we get and error
 // Bug : what if the goal is in danger zone
+// Think: Why do I need to have g_value both in vertex and g_value_parent_pair variable???
 #include<pluginlib/class_list_macros.h>
 #include<Dijkstra.h>
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
@@ -14,11 +15,6 @@ namespace global_planner{
         std::cout<<"Constructor \n";
 
     };
-    Dijkstra::Dijkstra(std::string name_ , costmap_2d::Costmap2DROS* costmap_ros)
-    {
-        initialize(name,costmap_ros);
-
-    }
 
 
     void Dijkstra::initialize(std::string name , costmap_2d::Costmap2DROS* costmap_ros)
@@ -30,6 +26,7 @@ namespace global_planner{
 
         points = std::make_unique<PointWrapper>(color,"map");
         points2 = std::make_unique<PointWrapper>(color2 , "map");
+
     }
 
     bool Dijkstra::makePlan(const geometry_msgs::PoseStamped& start,  const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) 
@@ -44,14 +41,13 @@ namespace global_planner{
                 
         
         Vertex goal_node; 
-        Vertex start_node; start_node.g_value = 0; start_node.parent = nullptr;
+        Vertex start_node; start_node.g_value = 0; 
         costmap_ros->getCostmap()->worldToMap(goal.pose.position.x , goal.pose.position.y ,goal_node.cell_x ,goal_node.cell_y ); 
         costmap_ros->getCostmap()->worldToMap(start.pose.position.x , start.pose.position.y ,start_node.cell_x , start_node.cell_y);
 
         open_list = std::priority_queue<Vertex , std::vector<Vertex> , Order>(); // to clear the last open_list for new goal
         g_value_parent_pair.clear();
         open_list.push(start_node);
-        Vertex current_node;
         std::vector<int>  valid_neighbors_indices;        
 
         ////////////////////////////////////////////////////////
@@ -72,14 +68,14 @@ namespace global_planner{
                 g_value_parent_pair.push_back(std::make_pair(std::numeric_limits<float>::infinity() ,nullptr ));
             }
         }
-        double dist_to_current_node = 1;
-        ros::Rate loop_rate(1000);
-        bool reached = false;
 
-        std::vector<Vertex> cur;
-        cur.resize(width*height);
-        while(ros::ok() && !open_list.empty() && !reached)
+        double dist_to_current_node = 1; // We are not dealing with weighted graph so this variable has value 1
+        std::vector<Vertex> nodes;
+        nodes.resize(width*height);
+        Vertex current_node;
+        while(!open_list.empty()) 
         {
+            
             current_node = open_list.top();
             if (current_node.cell_x == goal_node.cell_x && current_node.cell_y == goal_node.cell_y)
                 break;
@@ -90,46 +86,33 @@ namespace global_planner{
             {
                 if( current_node.g_value + dist_to_current_node  < g_value_parent_pair.at(ind).first)
                 {
-                    cur[ind] = (current_node);
+                    nodes[ind] = current_node;
                     g_value_parent_pair.at(ind).first = current_node.g_value + dist_to_current_node;
-                    g_value_parent_pair.at(ind).second = &cur[ind];
+                    g_value_parent_pair.at(ind).second = &nodes[ind];
                     unsigned int n_cell_x , n_cell_y;
                     costmap_ros->getCostmap()->indexToCells(ind, n_cell_x , n_cell_y);
                     
                     costmap_ros->getCostmap()->indexToCells(ind , v.cell_x , v.cell_y);
-                    v.g_value = current_node.g_value + dist_to_current_node; v.parent = &cur[ind];
+                    v.g_value = current_node.g_value + dist_to_current_node; 
                     open_list.push(v);
 
-                    // if (n_cell_x == goal_node.cell_x && n_cell_y==goal_node.cell_y)
-                    // {
-                    //     current_node = goal_node; 
-                    //     reached = true;
-                    //     break;
-                    // }
                 }
             }
 
             costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , p.x , p.y);
             points->addPoint(p);
             points->publish();
-
-            ros::spinOnce(); 
-            loop_rate.sleep();
         }
-        std::vector<Vertex> path;
-        ros::Rate loop_rate_2(100);
-        int index;
+
         geometry_msgs::PoseStamped pos;
         pos.pose.orientation.w = 1;
         pos.header.frame_id="map";
 
         while(true)
         {
-            index = costmap_ros->getCostmap()->getIndex(current_node.cell_x , current_node.cell_y); 
+            int index = costmap_ros->getCostmap()->getIndex(current_node.cell_x , current_node.cell_y); 
             costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , pos.pose.position.x , pos.pose.position.y); 
             plan.push_back(pos);
-            path.push_back(current_node);
-            
             
             costmap_ros->getCostmap()->mapToWorld(current_node.cell_x , current_node.cell_y , p.x , p.y);
             points2->addPoint(p);
@@ -141,15 +124,11 @@ namespace global_planner{
             {
                 break;
             }
-            ros::spinOnce(); // for publishing the path --> In case of not putting it it wont work
-            loop_rate_2.sleep();
         }
-        path.push_back(start_node);
-        std::reverse(path.begin() , path.end());
 
         plan[0].pose.orientation = goal.pose.orientation; 
         std::reverse(plan.begin() , plan.end()); 
-        ROS_ERROR("ENNNNNNNNNNNNNNNND");
+        ROS_ERROR("Finish Planning a Route");
         return true;
     }
 

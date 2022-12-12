@@ -48,13 +48,10 @@ remember to create a utility class for visualization
 
 namespace global_planner{
 
-    enum class status{UNCHECKED , OPEN , CLOSE};
-    
     struct Vertex{
         float g_value;
         unsigned int cell_x;
         unsigned int cell_y;
-        Vertex* parent;
 
         bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
         {
@@ -87,7 +84,6 @@ namespace global_planner{
         public:
 
             Dijkstra();
-            Dijkstra(std::string name_ , costmap_2d::Costmap2DROS* costmap_ros);
             void initialize(std::string name_, costmap_2d::Costmap2DROS* costmap_ros) override;
             bool makePlan(const geometry_msgs::PoseStamped& start, 
                         const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
