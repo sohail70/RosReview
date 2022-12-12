@@ -12,6 +12,7 @@ class PointWrapper{
         PointWrapper(std_msgs::ColorRGBA  color, std::string frame_id);
         void addPoint(geometry_msgs::Point point);
         void deletePoint(int i );
+        void initialize();
         void publish();
 
     private:

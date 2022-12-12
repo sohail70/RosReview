@@ -28,3 +28,8 @@ void PointWrapper::publish()
 {
     marker_pub.publish(points);
 }
+
+void PointWrapper::initialize()
+{
+    points.points.clear();
+}

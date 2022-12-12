@@ -34,7 +34,7 @@ int main(int argc , char** argv)
     auto base_object = plugins[0];
 
     auto dijkstra_object = dynamic_cast<global_planner::Dijkstra*>(base_object.get());
-    dijkstra_object->show();
+    // dijkstra_object->show();
     geometry_msgs::PoseStamped start , goal;
     start.pose.position.x = 0;
     start.pose.position.y = 0;

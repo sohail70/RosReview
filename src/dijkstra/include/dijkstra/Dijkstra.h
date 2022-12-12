@@ -51,13 +51,11 @@ namespace global_planner{
     enum class status{UNCHECKED , OPEN , CLOSE};
     
     struct Vertex{
-        int status;
-        int cost;
         float g_value;
-        unsigned int cell_x = 1000;
-        unsigned int cell_y = 1000;
+        unsigned int cell_x;
+        unsigned int cell_y;
         Vertex* parent;
-        std::vector<Vertex> neighbors;
+
         bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
         {
             return g_value == other.g_value;
@@ -90,31 +88,20 @@ namespace global_planner{
 
             Dijkstra();
             Dijkstra(std::string name_ , costmap_2d::Costmap2DROS* costmap_ros);
-
-
             void initialize(std::string name_, costmap_2d::Costmap2DROS* costmap_ros) override;
-
             bool makePlan(const geometry_msgs::PoseStamped& start, 
-            const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
-
-            void show();
-            void neighborsIntoList(Vertex current_node);
-            bool boundaryCheck(int cell_x , int cell_y);
-            bool statusCheck(int status);
-
+                        const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
             void validNeighbors(Vertex current_node , std::vector<int>& indices);
+
         private:
             std::string name;
-            costmap_2d::Costmap2DROS* costmap_ros;//in va paeeni ye functionality daran faghat paeeni ke man khodam neveshtamesh pose ro ham mide vali be nazar niazi nabode ke nanveshtan chun dar global planner robot ke harkat nemikune ke modhem bashe ghazie
-            // CostmapUtility cUtil; // be inniazi nist chun worldtomap va func e maptoworld dar costmap2dROS inkaro baramoon mikune
+            costmap_2d::Costmap2DROS* costmap_ros;
             std::priority_queue<Vertex , std::vector<Vertex> , Order> open_list;
-            std::unordered_multiset<Vertex,MyHash> closed_list; 
-            std::unordered_multiset<Vertex,MyHash> visited_list; 
-            PointWrapper* points;
-
-
-            std::vector<double> distance;
-            std::vector<unsigned int> parent;
+            // std::unordered_multiset<Vertex,MyHash> closed_list; 
+            // std::unordered_multiset<Vertex,MyHash> visited_list; 
+            
+            std::unique_ptr<PointWrapper> points;
+            std::unique_ptr<PointWrapper> points2;
 
             std::vector<std::pair<double, Vertex*>> g_value_parent_pair;
             
