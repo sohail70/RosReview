@@ -5,6 +5,7 @@
 // Bug : if the robot is in the danger zone the start point can not expand and we get and error
 // Bug : what if the goal is in danger zone
 // Think: Why do I need to have g_value both in vertex and g_value_parent_pair variable???
+// Priority queue of g_value and index  and a vector of parent and index --> see where it goes
 #include<pluginlib/class_list_macros.h>
 #include<Dijkstra.h>
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
@@ -75,19 +76,18 @@ namespace global_planner{
         Vertex current_node;
         while(!open_list.empty()) 
         {
-            
             current_node = open_list.top();
             if (current_node.cell_x == goal_node.cell_x && current_node.cell_y == goal_node.cell_y)
                 break;
-
+            int current_node_ind = costmap_ros->getCostmap()->getIndex(current_node.cell_x , current_node.cell_y);
             open_list.pop();
             validNeighbors(current_node , valid_neighbors_indices);
             for(auto& ind : valid_neighbors_indices)
             {
-                if( current_node.g_value + dist_to_current_node  < g_value_parent_pair.at(ind).first)
+                if(g_value_parent_pair.at(current_node_ind).first + dist_to_current_node  < g_value_parent_pair.at(ind).first)
                 {
                     nodes[ind] = current_node;
-                    g_value_parent_pair.at(ind).first = current_node.g_value + dist_to_current_node;
+                    g_value_parent_pair.at(ind).first = g_value_parent_pair.at(current_node_ind).first + dist_to_current_node;
                     g_value_parent_pair.at(ind).second = &nodes[ind];
                     unsigned int n_cell_x , n_cell_y;
                     costmap_ros->getCostmap()->indexToCells(ind, n_cell_x , n_cell_y);
