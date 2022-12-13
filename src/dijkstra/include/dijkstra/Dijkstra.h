@@ -48,37 +48,6 @@ remember to create a utility class for visualization
 
 namespace global_planner{
 
-    struct Vertex{
-        float g_value;
-        unsigned int cell_x;
-        unsigned int cell_y;
-
-        bool operator==(const Vertex& other) const //const ro nazari static_assert error mide // dar kul in operator vase set be in mani hast ke unique beshe set va vase unorderd_multiset be in mani hast ke onae ke g_value yeksan daran adjacent ham bashan vaghti ke roshon iterator mizani
-        {
-            return g_value == other.g_value;
-        }
-
-        bool operator!=(const Vertex& other) const
-        {
-            return (cell_x != other.cell_x && cell_y != other.cell_y);
-        }
-    };
-
-    struct Order{
-        bool operator()(Vertex a , Vertex b)
-        {
-            return a.g_value > b.g_value;
-        }
-    };
-
-    struct MyHash{
-        std::size_t operator()(Vertex v) const{
-            std::hash<int> hashVal;
-            return hashVal(v.g_value);
-        }
-    };
-
-
     class Dijkstra: public nav_core::BaseGlobalPlanner
     {
         public:
@@ -87,19 +56,22 @@ namespace global_planner{
             void initialize(std::string name_, costmap_2d::Costmap2DROS* costmap_ros) override;
             bool makePlan(const geometry_msgs::PoseStamped& start, 
                         const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
-            void validNeighbors(Vertex current_node , std::vector<int>& indices);
+            void validNeighbors(unsigned int current_node_index , std::vector<unsigned int>& indices);
 
         private:
             std::string name;
             costmap_2d::Costmap2DROS* costmap_ros;
-            std::priority_queue<Vertex , std::vector<Vertex> , Order> open_list;
-            // std::unordered_multiset<Vertex,MyHash> closed_list; 
-            // std::unordered_multiset<Vertex,MyHash> visited_list; 
-            
+            std::priority_queue<std::pair<unsigned int,unsigned int> , std::vector<std::pair<unsigned int, unsigned int>> , std::greater<std::pair<unsigned int, unsigned int>>> open_list;
+            std::vector<unsigned int> g_value;            
+
+
+
+
             std::unique_ptr<PointWrapper> points;
             std::unique_ptr<PointWrapper> points2;
 
-            std::vector<std::pair<double, Vertex*>> g_value_parent_pair;
+            std::vector<unsigned int> parent;
+            std::vector<unsigned int> visited;
             
     };
 
