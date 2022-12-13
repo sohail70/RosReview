@@ -41,7 +41,7 @@ remember to create a utility class for visualization
 #include<unordered_set>
 #include<algorithm>
 #include<numeric>
-
+#include<array>
 
 #include"PointWrapper.h"
 #include"CostmapUtility.h"
@@ -62,16 +62,9 @@ namespace global_planner{
             std::string name;
             costmap_2d::Costmap2DROS* costmap_ros;
             std::priority_queue<std::pair<unsigned int,unsigned int> , std::vector<std::pair<unsigned int, unsigned int>> , std::greater<std::pair<unsigned int, unsigned int>>> open_list;
-            std::vector<unsigned int> g_value;            
-
-
-
-
             std::unique_ptr<PointWrapper> points;
             std::unique_ptr<PointWrapper> points2;
 
-            std::vector<unsigned int> parent;
-            std::vector<unsigned int> visited;
             
     };
 

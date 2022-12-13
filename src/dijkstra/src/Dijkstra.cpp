@@ -1,15 +1,6 @@
-// follow the rules here http://wiki.ros.org/navigation/Tutorials/Writing%20A%20Global%20Path%20Planner%20As%20Plugin%20in%20ROS
-// Note : Read https://stackoverflow.com/questions/649640/how-to-do-an-efficient-priority-update-in-stl-priority-queue
-// baraye use kardan az func haye costmap2d_ ros  ----> ino dar cmake yadet nare be library myDijkstra ---> /opt/ros/noetic/lib/libcostmap_2d.so --> alabte vase func e getname niazi be in nist chun functionality ye seri ha dar header tarif shode
-
-// Bug : if the robot is in the danger zone the start point can not expand and we get and error
-// Bug : what if the goal is in danger zone
-// Think: Why do I need to have g_value both in vertex and g_value_parent_pair variable???
-// Priority queue of g_value and index  and a vector of parent and index --> see where it goes
-
 // https://stackoverflow.com/questions/21933029/dijkstras-algorithm-how-could-a-priority-queue-or-min-heap-be-used
 // https://www.topcoder.com/thrive/articles/Power%20up%20C++%20with%20the%20Standard%20Template%20Library%20Part%20Two:%20Advanced%20Uses
-
+// TODO: what if the start is in obstacle? what if the goal is in the obstacles! ---> Corner Case 
 #include<pluginlib/class_list_macros.h>
 #include<Dijkstra.h>
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
@@ -31,23 +22,24 @@ namespace global_planner{
 
         points = std::make_unique<PointWrapper>(color,"map");
         points2 = std::make_unique<PointWrapper>(color2 , "map");
-
-        g_value = std::vector<unsigned int>( 987654321 , 32768);
-        visited = std::vector<unsigned int>(32768 , 0);
-        parent = std::vector<unsigned int>(32768 , -1);
-
     }
 
     bool Dijkstra::makePlan(const geometry_msgs::PoseStamped& start,  const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) 
     {
     /************************************Dijkstra implementation*************************************************************************/
-        ROS_ERROR("DIJKSTRA STARTS");
+        ROS_INFO("Got new plan");
         points->initialize(); // Clear the previous points
         points2->initialize();
         points->publish();
         points2->publish();
         geometry_msgs::Point p;
 
+        const unsigned int width = 256 ;
+        const unsigned int height = 128;
+        const unsigned int number_of_cells = width*height;
+        std::array<unsigned int , number_of_cells> g_value; g_value.fill(987654321); 
+        std::array<unsigned int , number_of_cells> visited; visited.fill(0);
+        std::array<unsigned int , number_of_cells> parent; parent.fill(-1);
 
         unsigned int start_cell_x , start_cell_y , goal_cell_x , goal_cell_y;
         costmap_ros->getCostmap()->worldToMap(start.pose.position.x , start.pose.position.y ,start_cell_x , start_cell_y);
@@ -125,14 +117,8 @@ namespace global_planner{
         plan[0].pose.orientation = goal.pose.orientation; 
         std::reverse(plan.begin() , plan.end()); 
 
-
-
-        ROS_ERROR("EDNNNNNNNNNNNNNNND");
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                
+        ROS_INFO("Finish Building route");
         
-        g_value = std::vector<unsigned int>( 987654321 , 32768); // Reinitialize again for the next goal --> I put it here for performance
-        visited = std::vector<unsigned int>(32768 , 0);
-        parent = std::vector<unsigned int>(32768 , -1);
 
         return true;
     }
