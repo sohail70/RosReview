@@ -9,7 +9,7 @@ namespace global_planner{
 
     void Astar::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
     {
-
+        this->costmap_ros = costmap_ros;
     }
 
     
