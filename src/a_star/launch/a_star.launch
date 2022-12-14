@@ -1,0 +1,32 @@
+<launch>
+    <!-- Gazebo World -->
+    <include file = "$(find gazebo_ros)/launch/empty_world.launch" >
+        <arg name="world_name" value="$(find a_star)/include/worlds/simple.world"/>
+    </include>
+
+    <!-- Spawn Turtlebot -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find a_star)/launch/dep/urdf/turtlebot3_waffle.urdf.xacro'"/>
+    <node pkg = "gazebo_ros" type="spawn_model" name="spawn_model" args="-model tb3 -urdf -param robot_description -x 0.0 -y 0.0 -z 0.0"/>
+
+    <!-- TF for the joints -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+    <!-- Load the map -->
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find a_star)/map/simple.yaml"/>
+
+    <!-- AMCL - localication -->
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+        <rosparam file="$(find a_star)/config/amcl.yaml" command="load"/>
+        <remap from="scan" to="base_scan"/>
+    </node>
+
+    <!-- Move Base -->
+    <node pkg="move_base" type="move_base" name="move_base" output="screen">
+        <remap from="scan" to="base_scan"/>
+        <rosparam file="$(find a_star)/config/global_costmap.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find a_star)/config/local_costmap.yaml" command="load" ns="local_costmap"/>
+        
+        <param name="base_global_planner" value="global_planner/Astar"/>
+    </node>
+
+</launch>

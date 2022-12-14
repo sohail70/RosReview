@@ -1,0 +1,5 @@
+<library path="lib/libAstar">
+  <class name="global_planner/Astar" type="global_planner::Astar" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>Astar algorithm</description>
+  </class>
+ </library>

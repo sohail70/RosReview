@@ -1,6 +1,8 @@
 // https://stackoverflow.com/questions/21933029/dijkstras-algorithm-how-could-a-priority-queue-or-min-heap-be-used
 // https://www.topcoder.com/thrive/articles/Power%20up%20C++%20with%20the%20Standard%20Template%20Library%20Part%20Two:%20Advanced%20Uses
 // TODO: what if the start is in obstacle? what if the goal is in the obstacles! ---> Corner Case 
+// TODO: Ability to accepts diagonal nodes as neighbors
+
 #include<pluginlib/class_list_macros.h>
 #include<Dijkstra.h>
 PLUGINLIB_EXPORT_CLASS(global_planner::Dijkstra, nav_core::BaseGlobalPlanner) 
@@ -68,7 +70,7 @@ namespace global_planner{
             } 
 
 
-            if(d <= g_value[v] && visited[v]==false)
+            if(d <= g_value[v] )//&& visited[v]==false)
             {
                 std::vector<unsigned int>  valid_neighbors_indices;        
                 validNeighbors(v, valid_neighbors_indices);
