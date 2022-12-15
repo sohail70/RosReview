@@ -33,7 +33,7 @@ namespace global_planner{
     
     bool Astar::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan)
     {
-        ROS_ERROR("ASTAR STARTS");
+        ROS_INFO("ASTAR STARTS");
 
         points->initialize(); // Clear the previous points
         points2->initialize();
@@ -91,8 +91,8 @@ namespace global_planner{
                     {
                         g_value[v2] = g_value[v] + cost;
                         float h_value = hValue(v2 , goal_index);
-                        unsigned int v2_cell_x , v2_cell_y; costmap_ros->getCostmap()->indexToCells(v2 , v2_cell_x , v2_cell_y);
-                        tieBreaker(h_value, v2_cell_x , v2_cell_y , start_cell_x , start_cell_y , goal_cell_x , goal_cell_y);
+                        unsigned int v2_cell_x , v2_cell_y; costmap_ros->getCostmap()->indexToCells(v2 , v2_cell_x , v2_cell_y); //**
+                        tieBreaker(h_value, v2_cell_x , v2_cell_y , start_cell_x , start_cell_y , goal_cell_x , goal_cell_y); //**
                         open_list.push(std::pair<float , unsigned int>(g_value[v2] +h_value  , v2)); // **
                         parent[v2] = v;
                     }
@@ -110,7 +110,7 @@ namespace global_planner{
         }
 
 
-        /* if you don't want the robot to move you can delete the below codes until return true */
+        /* if you don't want the robot to move you can delete the below codes until return true to just test the A-star algorithm on different goal very fast without moving the robot */
         geometry_msgs::PoseStamped pos;
         pos.pose.orientation.w = 1;
         pos.header.frame_id="map";
