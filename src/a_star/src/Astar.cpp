@@ -110,7 +110,32 @@ namespace global_planner{
         }
 
 
+        /* if you don't want the robot to move you can delete the below codes until return true */
+        geometry_msgs::PoseStamped pos;
+        pos.pose.orientation.w = 1;
+        pos.header.frame_id="map";
 
+        unsigned int current_index = goal_index;
+        while(parent[current_index]!=-2)
+        {
+            unsigned int cell_x , cell_y ;
+            costmap_ros->getCostmap()->indexToCells(current_index , cell_x , cell_y);
+            costmap_ros->getCostmap()->mapToWorld(cell_x , cell_y , p.x , p.y);
+            points2->addPoint(p);
+            points2->publish();
+
+            pos.pose.position.x = p.x;
+            pos.pose.position.y = p.y;
+            plan.push_back(pos);
+
+            current_index = parent[current_index];
+
+            
+        }
+        plan[0].pose.orientation = goal.pose.orientation; 
+        std::reverse(plan.begin() , plan.end()); 
+
+        ROS_INFO("Finish Building route");
 
 
 
