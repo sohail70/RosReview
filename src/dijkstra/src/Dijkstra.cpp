@@ -70,7 +70,7 @@ namespace global_planner{
             } 
 
 
-            if(d <= g_value[v] )//&& visited[v]==false)
+            if(d <= g_value[v] && visited[v]==false)
             {
                 std::vector<unsigned int>  valid_neighbors_indices;        
                 validNeighbors(v, valid_neighbors_indices);
