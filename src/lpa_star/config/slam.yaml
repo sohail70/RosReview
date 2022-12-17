@@ -1,0 +1,16 @@
+base_frame: "base_link"
+map_frame: "map"
+odom_frame: "odom"
+particles: 100
+delta: 0.1
+map_update_interval: 2.0
+# map  xmin=-4 xmax=27 ymin=
+xmin: -4
+xmax: 24
+ymin: -6.5
+ymax: 6.5
+
+linearUpdate: 0
+angularUpdate: 0
+map_update_interval: 0.5
+

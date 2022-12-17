@@ -19,7 +19,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include <stdio.h>
-
+#include <iostream>
 namespace gazebo
 {
   class AnimatedBox : public ModelPlugin
@@ -29,47 +29,51 @@ namespace gazebo
       // Store the pointer to the model
       this->model = _parent;
 
-        // create the animation
-        gazebo::common::PoseAnimationPtr anim(
-              // name the animation "test",
-              // make it last 10 seconds,
-              // and set it on a repeat loop
-              new gazebo::common::PoseAnimation("test", 10.0, true));
+      double x , y; 
+      if (_parent->GetName()=="box-1")
+      {
+        x=5;y=5;
+      }
+      else if (_parent->GetName()=="box-2")
+      {
+        x=10;y=-5;
+      }
+      else if(_parent->GetName()=="box-3")
+      {
+        x=15;y=5;
+      }
+      else if(_parent->GetName()=="box-4")
+      {
+        x=20;y=-5;
+      }
 
-        gazebo::common::PoseKeyFrame *key;
+      // create the animation
+      gazebo::common::PoseAnimationPtr anim(
+            // name the animation "test",
+            // make it last 10 seconds,
+            // and set it on a repeat loop
+            new gazebo::common::PoseAnimation("test", 40.0, true));
 
-        // set starting location of the box
-        key = anim->CreateKeyFrame(0);
-        key->Translation(ignition::math::Vector3d(0, 0, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+      gazebo::common::PoseKeyFrame *key;
 
-        // set waypoint location after 2 seconds
-        key = anim->CreateKeyFrame(2.0);
-        key->Translation(ignition::math::Vector3d(-50, -50, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
+      // set starting location of the box
+      key = anim->CreateKeyFrame(0);
+      key->Translation(ignition::math::Vector3d(x, -y, 0));
+      key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
+      // set waypoint location after 2 seconds
+      key = anim->CreateKeyFrame(20.0);
+      key->Translation(ignition::math::Vector3d(x, +y, 0));
+      key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
 
-        key = anim->CreateKeyFrame(4.0);
-        key->Translation(ignition::math::Vector3d(10, 20, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
+      // set final location equal to starting location
+      key = anim->CreateKeyFrame(40.0);
+      key->Translation(ignition::math::Vector3d(x, -y, 0));
+      key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-
-        key = anim->CreateKeyFrame(6.0);
-        key->Translation(ignition::math::Vector3d(-10, 20, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
-
-
-        key = anim->CreateKeyFrame(8.0);
-        key->Translation(ignition::math::Vector3d(10, -20, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
-
-        // set final location equal to starting location
-        key = anim->CreateKeyFrame(10);
-        key->Translation(ignition::math::Vector3d(0, 0, 0));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
-        // set the animation
-        _parent->SetAnimation(anim);
+      // set the animation
+      _parent->SetAnimation(anim);
+    
     }
 
     // Pointer to the model
