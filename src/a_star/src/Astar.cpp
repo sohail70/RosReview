@@ -151,9 +151,6 @@ namespace global_planner{
         float scale = 1;
         float dist = scale*man(cell_x , cell_y , goal_cell_x , goal_cell_y);
         return dist; 
-        
-
-        // return man();
     }
 
     float Astar::euc(int a_cell_x , int a_cell_y , int b_cell_x , int b_cell_y)
@@ -172,6 +169,7 @@ namespace global_planner{
         int dy1 = cell_y - goal_cell_y;
         int dx2 = start_cell_x - goal_cell_x;
         int dy2 = start_cell_y - goal_cell_y;
+        // vec1 = (x1 y1 0)    vec2= (x2 y2 0)    crossProd(vec1,vec2) = i(0)-j(0)+k(x1y2 - x2y1)
         float cross = std::abs(dx1*dy2 - dx2*dy1); //Cross product of start-goal vector and current-goal vector
         h_value += cross*0.001;
     }
