@@ -76,7 +76,7 @@ int main(int _argc, char **_argv)
   while (ros::ok()) //ros::ok ro age jash true bezari vaghti ctrl+c mizani vasate run kar nemikune !!
   {
     gazebo::common::Time::MSleep(1000);
-    ROS_ERROR("IN The While");
+    // ROS_ERROR("IN The While");
     ros::spinOnce();
   }
   

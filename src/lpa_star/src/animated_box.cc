@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <memory>
-#include<geometry_msgs/Vector3.h>
 #include <ros/ros.h>
 #include<string>
 #include<lpa_star/dynamic_obs.h>
@@ -19,23 +18,11 @@ namespace gazebo
   {
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
-
-      
-
-
       int argc; char** argv;
-      // gazebo::client::setup(argc, argv);
-      // node.Init();
-      // sub = node.Subscribe("~/pose/info", &AnimatedBox::posesStampedCallback , this);
       ros::init(argc,argv , "box_size");
-      
-      // pub = nh.advertise<geometry_msgs::Vector3>("box_size",100);
-
-      // Store the pointer to the model
       this->model = _parent;
 
 
-      // std::cout<<"Parent:"<<model->GetChild(0)->GetName()<<"\n"; //GetChild(0) mishe link ---> dar animated_box.world ham mitooni ino bebini --> GetName ham ino behet neshoon mide
      
 
       // gazebo::physics::BasePtr link = model->GetChild(0); //we get the link but its still the basePtr - so below we cast it 
@@ -47,7 +34,6 @@ namespace gazebo
       ignition::math::Vector3d  vec3 = box->Size();
       box_size.push_back(vec3[0]);box_size.push_back(vec3[1]); box_size.push_back(vec3[2]);
 
-      // ROS_ERROR("SETTING THE PARAMETERS %s",this->model->GetName().c_str()); 
       try{
         nh.setParam(this->model->GetName()+"_size" ,box_size );
       }
@@ -74,11 +60,7 @@ namespace gazebo
         x=20;y=-5;
       }
 
-      // create the animation
       gazebo::common::PoseAnimationPtr anim(
-            // name the animation "test",
-            // make it last 10 seconds,
-            // and set it on a repeat loop
             new gazebo::common::PoseAnimation("test", 40.0, true));
 
       gazebo::common::PoseKeyFrame *key;
@@ -107,19 +89,10 @@ namespace gazebo
     }
     public: void OnUpdate()
     {
-      // ROS_ERROR("DEEEEEEEEEEEEEEEEEEEE %f %f %f",vec3_2.x,vec3_2.y,vec3_2.z );
-      // pub.publish(gazebo::AnimatedBox::vec3_2);
-      // if (!ros::ok())
-      // {
-      //     gazebo::client::shutdown();
-      // }
+      // ROS_WARN("This function is called every time! I don't need it now");
     }
 
-    // void posesStampedCallback(ConstPosesStampedPtr &posesStamped)
-    // {
-    //   std::cout << posesStamped->DebugString();
-    // }
-    // Pointer to the model
+
     private: physics::ModelPtr model;
 
     // Pointer to the update event connection
@@ -130,10 +103,7 @@ namespace gazebo
 
     private:
       ros::NodeHandle nh;
-      // ros::Publisher pub;
-
-      // gazebo::transport::Node node;
-      // gazebo::transport::SubscriberPtr sub;
+     
     
   };
   // geometry_msgs::Vector3 makeVec()
