@@ -11,7 +11,7 @@
       <uri>model://sun</uri>
     </include>
     <!-- Dynamic obstacles: 4 boxes -->
-    <model name="box-1">
+    <model name="box_1">
       <pose>0 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
@@ -35,7 +35,7 @@
     </model>        
 
 
-    <model name="box-2">
+    <model name="box_2">
       <pose>0 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
@@ -59,7 +59,7 @@
     </model>        
 
 
-    <model name="box-3">
+    <model name="box_3">
       <pose>0 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
@@ -83,7 +83,7 @@
     </model>        
 
 
-    <model name="box-4">
+    <model name="box_4">
       <pose>0 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">

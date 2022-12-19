@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(lpa_star)
-
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -9,8 +8,14 @@ project(lpa_star)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  message_generation
 )
 
+
+
+find_package(gazebo REQUIRED)
+include_directories(${GAZEBO_INCLUDE_DIRS})
+link_directories(${GAZEBO_LIBRARY_DIRS})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -45,11 +50,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
+add_message_files(
+  FILES
+  dynamic_obs.msg
 #   Message2.msg
-# )
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -66,10 +71,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -103,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES lpa_star
-#  CATKIN_DEPENDS roscpp
+ CATKIN_DEPENDS roscpp message_runtime
 #  DEPENDS system_lib
 )
 
@@ -115,7 +120,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
-  ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS} # in hamoon folder include hast vaghti ke miay toye folder RosReview va vaghti ham ke mikhay hala az custom msg e ke ijad kardi use kuni bayad refrence et oon bashe yani name folder va bad .h ro benvisi ke dar in cmake mishe #include<lpa_star/dynamic_obs.h>
 )
 
 ## Declare a C++ library
@@ -131,7 +136,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/lpa_star_node.cpp)
+add_executable(lpa_star src/lpa_star.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -141,12 +146,13 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(lpa_star ${lpa_star_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(lpa_star
+  ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}
+)
+
 
 #############
 ## Install ##
@@ -205,8 +211,10 @@ include_directories(
 
 
 
-find_package(gazebo REQUIRED)
-include_directories(${GAZEBO_INCLUDE_DIRS})
-link_directories(${GAZEBO_LIBRARY_DIRS})
+
 add_library(animated_box SHARED src/animated_box.cc)
-target_link_libraries(animated_box ${GAZEBO_LIBRARIES})
+target_link_libraries(animated_box ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} )
+
+
+add_executable(independent_listener src/independent_listener.cc)
+target_link_libraries(independent_listener ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${geometry_msgs}  pthread)
