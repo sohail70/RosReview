@@ -4,5 +4,5 @@
 
 int main(int argc , char** argv)
 {
-    ros::init(argc, argv , "model");
+    ros::init(argc, argv , "lpa_star");
 }

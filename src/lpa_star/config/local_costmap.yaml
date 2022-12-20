@@ -1,0 +1,66 @@
+global_frame: map
+robot_base_frame: base_link
+transform_tolerance: 0.2
+
+update_frequency: 5.0
+publish_frequency: 2.0 #vase local cost map in moheme ke beroz beshe --> hamin baes mishe hamra ba robot in window harkat kune - in to halat default 0 hast 
+
+rolling_window: true
+width: 5
+height: 5
+
+resolution: 0.05
+
+origin_x: 0.0
+origin_y: 0.0
+footprint: [[-0.205, -0.155], [-0.205, 0.155], [0.077, 0.155], [0.077, -0.155]]
+
+# Here I used another layer because ObstacleLayer uses ray tracing and the dynamic obstacles creates a trace and since we don't have a wall behind the obstacle layer we can not clear the local_costmap.
+# another solution is to implement a clear cost_map for your self. and because the clear cost map is in the move_base pkg and we don't have time to implement it I decided to use the spatial voxed layer.
+plugins:
+  # - {name: obstacle , type: costmap_2d::ObstacleLayer}
+  - {name: inflation , type: costmap_2d::InflationLayer}
+  - {name: obstacle , type: spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer} #https://answers.ros.org/question/346886/clear-obstacles-of-obstacle-layer-of-costmap/ , https://github.com/SteveMacenski/spatio_temporal_voxel_layer
+
+
+# obstacle:
+#   observation_sources: scan
+#   scan: {topic: base_scan , sensor_frame: base_laser_link , data_type: LaserScan ,  clearing: true }
+
+obstacle:
+  enabled:               true
+  voxel_decay:           0.25   #seconds if linear, e^n if exponential
+  decay_model:           0      #0=linear, 1=exponential, -1=persistent
+  voxel_size:            0.05   #meters
+  track_unknown_space:   true   #default space is unknown
+  observation_persistence: 0.0  #seconds
+  max_obstacle_height:   2.0    #meters
+  unknown_threshold:     15     #voxel height
+  mark_threshold:        0      #voxel height
+  update_footprint_enabled: true
+  combination_method:    1      #1=max, 0=override
+  obstacle_range:        3.0    #meters
+  origin_z:              0.0    #meters
+  publish_voxel_map:     true   # default off
+  transform_tolerance:   0.2    # seconds
+  mapping_mode:          false  # default off, saves map not for navigation
+  map_save_duration:     60     #default 60s, how often to autosave
+  observation_sources:    rgbd1_mark
+  rgbd1_mark:
+    data_type: LaserScan
+    topic: /base_scan
+    marking: true
+    clearing: true
+    #min_obstacle_height: 0.3     #default 0, meters
+    #max_obstacle_height: 2.0     #defaule 3, meters
+    expected_update_rate: 3.0    #default 0, if not updating at this rate at least, remove from buffer
+    observation_persistence: 0.0 #default 0, use all measurements taken during now-value, 0=latest
+    inf_is_valid: false          #default false, for laser scans
+    clear_after_reading: true    #default false, clear the buffer after the layer gets readings from it
+    voxel_filter: true           #default off, apply voxel filter to sensor, recommend on
+    voxel_min_points: 0          #default 0, minimum points per voxel for voxel filter:
+ 
+
+inflation:
+  inflation_radius: 0.55
+  cost_scaling_factor: 10

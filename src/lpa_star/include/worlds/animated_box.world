@@ -1708,10 +1708,10 @@
       </link>
     </model>
     <state world_name='animated_box_world'>
-      <sim_time>198 749000000</sim_time>
-      <real_time>209 520186210</real_time>
-      <wall_time>1671294529 692099967</wall_time>
-      <iterations>198749</iterations>
+      <sim_time>0</sim_time>
+      <real_time>0</real_time>
+      <wall_time>0</wall_time>
+      <iterations>0</iterations>
       <model name='Walls'>
         <pose>9.71176 -0.031528 0 0 -0 0</pose>
         <scale>1 1 1</scale>
