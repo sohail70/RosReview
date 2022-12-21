@@ -12,7 +12,7 @@
     </include>
     <!-- Dynamic obstacles: 4 boxes -->
     <model name="box_1">
-      <pose>0 0 0.5 0 0 0</pose>
+      <pose name="pose">0 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>

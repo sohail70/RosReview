@@ -6,8 +6,8 @@ update_frequency: 5.0
 publish_frequency: 2.0 #vase local cost map in moheme ke beroz beshe --> hamin baes mishe hamra ba robot in window harkat kune - in to halat default 0 hast 
 
 rolling_window: true
-width: 5
-height: 5
+width: 6
+height: 6
 
 resolution: 0.05
 

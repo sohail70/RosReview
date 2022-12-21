@@ -23,6 +23,10 @@
     <node pkg="move_base" type="move_base" name="move_base" output="screen">
         <rosparam file="$(find lpa_star)/config/global_costmap.yaml" ns="global_costmap" command="load"/>
         <rosparam file="$(find lpa_star)/config/local_costmap.yaml" ns="local_costmap" command="load"/>
+        <!-- https://answers.ros.org/question/236497/which-local-planner-should-i-use-for-dynamic-obstacles/ -->
+        <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />  <!-- We use Teb local planner due to dynamic obstacle-->
+        <rosparam file="$(find lpa_star)/config/teb_local_planner.yaml" command="load" />
+
         <remap from="scan" to="base_scan"/>
     </node>
     
