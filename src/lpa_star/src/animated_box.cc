@@ -14,237 +14,185 @@
 
 #include <costmap_converter/ObstacleArrayMsg.h>
 #include <geometry_msgs/Point32.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/Quaternion.h>
+#include <cmath>
 
 namespace gazebo
 {
   class AnimatedBox : public ModelPlugin
   {
+    public: 
+      void setBoxSizeParam(int i)
+      {
+        
+        // gazebo::physics::BasePtr link = model->GetChild(0); //we get the link but its still the basePtr - so below we cast it 
+        gazebo::physics::LinkPtr link = models.at(i)->GetLink("link");
+        // gazebo::physics::CollisionPtr collision = boost::dynamic_pointer_cast<gazebo::physics::Collision>(link->GetChild(0));
+        gazebo::physics::CollisionPtr collision = boost::dynamic_pointer_cast<gazebo::physics::Collision>(link->GetCollision("collision"));
+        gazebo::physics::ShapePtr shape(collision->GetShape());
+        gazebo::physics::BoxShapePtr box = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(shape);
+        ignition::math::Vector3d  vec3 = box->Size();
+        box_size.at(i).push_back(vec3[0]);box_size.at(i).push_back(vec3[1]); box_size.at(i).push_back(vec3[2]);
+        
+        try{
+          nh.setParam(this->models.at(i)->GetName()+"_size" ,box_size.at(i) );
+        }
+        catch(const std::exception& e)
+        {
+          std::cout<<"Exception: "<<e.what()<<"\n";
+        }
+      }
+
+
+      void setAnimationForBoxes(int i)
+      {
+        ROS_ERROR("ANIMMMMMMM %i", i);
+        double x = box_init_position.at(i).at(0);
+        double y = box_init_position.at(i).at(1);
+        gazebo::common::PoseAnimationPtr anim(
+              new gazebo::common::PoseAnimation("test", 80.0, true));
+
+        gazebo::common::PoseKeyFrame *key;
+
+        // set starting location of the box
+        key = anim->CreateKeyFrame(0);
+        key->Translation(ignition::math::Vector3d(x, -y, 0));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+        // set waypoint location after 2 seconds
+        key = anim->CreateKeyFrame(40.0);
+        key->Translation(ignition::math::Vector3d(x, +y, 0));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
+
+        // set final location equal to starting location
+        key = anim->CreateKeyFrame(80.0);
+        key->Translation(ignition::math::Vector3d(x, -y, 0));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+
+
+
+        ROS_ERROR("ANIM %i",i);
+        // set the animation
+        models.at(i)->SetAnimation(anim);
+      }
+
+
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
       int argc; char** argv;
       ros::init(argc,argv , "box_size");
-      pub = nh.advertise<costmap_converter::ObstacleArrayMsg>("obstacles",10);
+      pub = nh.advertise<costmap_converter::ObstacleArrayMsg>("/move_base/TebLocalPlannerROS/obstacles",4);
 
-      this->model = _parent;
+      this->model = _parent; //boxes
+      
+      // ROS_ERROR("CHILD COUNT %i" , model->GetChildCount());
+      obstacles_info.obstacles.resize(4);
+      obstacles_info.obstacles.at(0).polygon.points.resize(1);
+      obstacles_info.obstacles.at(0).orientation.w = 1;
+      obstacles_info.obstacles.at(1).polygon.points.resize(1);
+      obstacles_info.obstacles.at(1).orientation.w = 1;
+      obstacles_info.obstacles.at(2).polygon.points.resize(1);
+      obstacles_info.obstacles.at(2).orientation.w = 1;
+      obstacles_info.obstacles.at(3).polygon.points.resize(1);
+      obstacles_info.obstacles.at(3).orientation.w = 1;
+      obstacles_info.header.frame_id = "odom";
+      obstacles_info.obstacles.at(0).id = 1;
+      obstacles_info.obstacles.at(1).id = 2;
+      obstacles_info.obstacles.at(2).id = 3;
+      obstacles_info.obstacles.at(3).id = 4;
+      box_size.resize(model->GetChildCount());
 
+      lastPose.resize(model->GetChildCount());
+       
+      box_init_position.resize(model->GetChildCount());
+      box_init_position.at(0).push_back(5);box_init_position.at(0).push_back(3); lastPose.at(0).SetX(5) ; lastPose.at(0).SetY(3);
+      box_init_position.at(1).push_back(10);box_init_position.at(1).push_back(-3);lastPose.at(1).SetX(10) ; lastPose.at(1).SetY(-3);
+      box_init_position.at(2).push_back(15);box_init_position.at(2).push_back(3);lastPose.at(2).SetX(15) ; lastPose.at(2).SetY(3);
+      box_init_position.at(3).push_back(20);box_init_position.at(3).push_back(-3);lastPose.at(3).SetX(20) ; lastPose.at(3).SetY(-3);
+      
+      for( int i = 0 ; i<model->GetChildCount(); i++)
+      {
+        models.push_back(boost::dynamic_pointer_cast<gazebo::physics::Model>(model->GetChild(i)));
+        // ROS_ERROR("model %s" , models.at(i)->GetName().c_str());
+        setBoxSizeParam(i);
+        setAnimationForBoxes(i);
+      }
+      
       this->lastUpdate = gazebo::common::Time(0);
 
 
-      // gazebo::physics::BasePtr link = model->GetChild(0); //we get the link but its still the basePtr - so below we cast it 
-      gazebo::physics::LinkPtr link =  model->GetLink("link");
-      // gazebo::physics::CollisionPtr collision = boost::dynamic_pointer_cast<gazebo::physics::Collision>(link->GetChild(0));
-      gazebo::physics::CollisionPtr collision = boost::dynamic_pointer_cast<gazebo::physics::Collision>(link->GetCollision("collision"));
-      gazebo::physics::ShapePtr shape(collision->GetShape());
-      gazebo::physics::BoxShapePtr box = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(shape);
-      ignition::math::Vector3d  vec3 = box->Size();
-      box_size.push_back(vec3[0]);box_size.push_back(vec3[1]); box_size.push_back(vec3[2]);
+      
 
-      try{
-        nh.setParam(this->model->GetName()+"_size" ,box_size );
-      }
-      catch(const std::exception& e)
-      {
-        std::cout<<"Exception: "<<e.what()<<"\n";
-      }
-
-      double x , y; 
-      if (_parent->GetName()=="box_1")
-      {
-        x=5;y=5;
-        lastPose1.SetX(x);
-        lastPose1.SetY(y);
-      }
-      else if (_parent->GetName()=="box_2")
-      {
-        x=10;y=-5;
-        lastPose2.SetX(x);
-        lastPose2.SetY(y);
-      }
-      else if(_parent->GetName()=="box_3")
-      {
-        x=15;y=5;
-        lastPose3.SetX(x);
-        lastPose3.SetY(y);
-      }
-      else if(_parent->GetName()=="box_4")
-      {
-        x=20;y=-5;
-        lastPose4.SetX(x);
-        lastPose4.SetY(y);
-      }
-
-      gazebo::common::PoseAnimationPtr anim(
-            new gazebo::common::PoseAnimation("test", 40.0, true));
-
-      gazebo::common::PoseKeyFrame *key;
-
-      // set starting location of the box
-      key = anim->CreateKeyFrame(0);
-      key->Translation(ignition::math::Vector3d(x, -y, 0));
-      key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
-      // set waypoint location after 2 seconds
-      key = anim->CreateKeyFrame(20.0);
-      key->Translation(ignition::math::Vector3d(x, +y, 0));
-      key->Rotation(ignition::math::Quaterniond(0, 0, 1.5707));
-
-      // set final location equal to starting location
-      key = anim->CreateKeyFrame(40.0);
-      key->Translation(ignition::math::Vector3d(x, -y, 0));
-      key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
-
-      obstacles_info.obstacles.resize(4);
-      obstacles_info.obstacles.at(0).polygon.points.resize(1);
-      obstacles_info.obstacles.at(1).polygon.points.resize(1);
-      obstacles_info.obstacles.at(2).polygon.points.resize(1);
-      obstacles_info.obstacles.at(3).polygon.points.resize(1);
-
-      // set the animation
-      _parent->SetAnimation(anim);
-
-      // https://answers.gazebosim.org//question/19883/can-someone-explain-the-role-of-connectworldupdatebegin-function/
+      https://answers.gazebosim.org//question/19883/can-someone-explain-the-role-of-connectworldupdatebegin-function/
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(
           std::bind(&AnimatedBox::OnUpdate, this,std::placeholders::_1));
     
     }
+
+    public:
+      void setObstacleInfo(int i ,double dt)
+      {
+        gazebo::physics::LinkPtr link = boost::dynamic_pointer_cast<gazebo::physics::Link>(this->models.at(i)->GetLink("link"));
+        ignition::math::Pose3d Pose = link->WorldCoGPose();
+
+        obstacles_info.obstacles.at(i).velocities.twist.linear.y = (Pose.Y() - this->lastPose.at(i).Y()) / dt; // Teb uses constant velocity model but who cares :)
+
+        double yaw = atan2(obstacles_info.obstacles.at(i).velocities.twist.linear.y  , 0);
+        tf2::Quaternion q;
+        q.setRPY(0,0,yaw);
+        geometry_msgs::Quaternion qq; qq.w = q.getW() ; qq.x=q.getX() ; qq.y=q.getY() ; qq.z = q.getZ();
+        obstacles_info.obstacles.at(i).orientation = qq;
+
+        obstacles_info.obstacles.at(i).polygon.points[0].x = Pose.X();
+        obstacles_info.obstacles.at(i).polygon.points[0].y = Pose.Y();
+        obstacles_info.obstacles.at(i).polygon.points[0].z = Pose.Z();
+
+        // ROS_ERROR("Name: %s %f %f %f", name.c_str(), Pose.Y() , this->lastPose.Y() ,  obstacles_info.obstacles.at(0).velocities.twist.linear.y);
+        this->lastPose.at(i).SetY(Pose.Y());
+      }
+
     public: void OnUpdate(const common::UpdateInfo& info) //https://classic.gazebosim.org/tutorials?tut=actor&cat=build_robot
     {
-      // ROS_WARN("This function is called every time! I don't need it now"); //Maybe I can use it to publish velocity and positions to obstacle topic for the teb local planner
-      double dt = (info.simTime - this->lastUpdate).Double();
-      // ROS_ERROR("DDDDTTTTT: %f",dt);
-      
-      gazebo::physics::LinkPtr link = boost::dynamic_pointer_cast<gazebo::physics::Link>(this->model->GetLink("link"));
-      // ROS_ERROR("Name: %s %f %f %f" ,this->model->GetName().c_str() ,  pose.X() , pose.Y() , pose.Z());
-      
-
-      obstacles_info.header.frame_id = "odom";
       obstacles_info.header.stamp = ros::Time::now();
 
-      
-
-      std::string name = this->model->GetName();
-      static int counter = 0;
-      if (name=="box_1")
+      for( int i = 0 ; i<model->GetChildCount(); i++)
       {
-        this->Pose1 = link->WorldCoGPose();
-
-        obstacles_info.obstacles.at(0).velocities.twist.linear.y = (Pose1.Y() - this->lastPose1.Y()) / dt;
-        obstacles_info.obstacles.at(0).id = 1; //box_1
-
-        obstacles_info.obstacles.at(0).polygon.points[0].x = Pose1.X();
-        obstacles_info.obstacles.at(0).polygon.points[0].y = Pose1.Y();
-        obstacles_info.obstacles.at(0).polygon.points[0].z = Pose1.Z();
-
-        // ROS_ERROR("Name: %s %f %f %f", name.c_str(), Pose1.Y() , this->lastPose1.Y() ,  obstacles_info.obstacles.at(0).velocities.twist.linear.y);
-        this->lastPose1.SetY(Pose1.Y());
-        counter++;
- 
+        double dt = (info.simTime - this->lastUpdate).Double();
+        setObstacleInfo(i,dt);
       }
-      else if (name=="box_2")
-      {
-        this->Pose2 = link->WorldCoGPose();
-
-        obstacles_info.obstacles.at(1).velocities.twist.linear.y = (Pose2.Y() - this->lastPose2.Y()) / dt;
-        obstacles_info.obstacles.at(1).id = 2;
-
-        obstacles_info.obstacles.at(1).polygon.points[0].x = Pose2.X();
-        obstacles_info.obstacles.at(1).polygon.points[0].y = Pose2.Y();
-        obstacles_info.obstacles.at(1).polygon.points[0].z = Pose2.Z();
-        // ROS_ERROR("Name: %s %f %f %f", name.c_str(), Pose2.Y() , this->lastPose2.Y() ,  obstacles_info.obstacles.at(1).velocities.twist.linear.y);
-        this->lastPose2.SetY(Pose2.Y());
-        counter++;
-      }
-      else if (name=="box_3")
-      {
-        this->Pose3 = link->WorldCoGPose();
-
-        obstacles_info.obstacles.at(2).velocities.twist.linear.y = (Pose3.Y() - this->lastPose3.Y()) / dt;
-        obstacles_info.obstacles.at(2).id = 3;
-
-        obstacles_info.obstacles.at(2).polygon.points[0].x = Pose3.X();
-        obstacles_info.obstacles.at(2).polygon.points[0].y = Pose3.Y();
-        obstacles_info.obstacles.at(2).polygon.points[0].z = Pose3.Z();
-        // ROS_ERROR("Name: %s %f %f %f", name.c_str(), Pose3.Y() , this->lastPose3.Y() ,  obstacles_info.obstacles.at(2).velocities.twist.linear.y);
-        this->lastPose3.SetY(Pose3.Y());
-        counter++;
-      }
-      else if (name=="box_4")
-      {
-        this->Pose4 = link->WorldCoGPose();
-
-        obstacles_info.obstacles.at(3).velocities.twist.linear.y = (Pose4.Y() - this->lastPose4.Y()) / dt;
-        obstacles_info.obstacles.at(3).id = 4;
-
-        obstacles_info.obstacles.at(3).polygon.points[0].x = Pose4.X();
-        obstacles_info.obstacles.at(3).polygon.points[0].y = Pose4.Y();
-        obstacles_info.obstacles.at(3).polygon.points[0].z = Pose4.Z();
-        // ROS_ERROR("Name: %s %f %f %f", name.c_str(), Pose4.Y() , this->lastPose4.Y() ,  obstacles_info.obstacles.at(3).velocities.twist.linear.y);
-        this->lastPose4.SetY(Pose4.Y());
-        counter++;
-      }
-
-
-
-
       this->lastUpdate = info.simTime;
-      // if( (counter % 4) == 0)
-      // {
-        ROS_ERROR("Name: %s %f %f %f", name.c_str(), this->Pose1.Y() , this->lastPose1.Y() ,  obstacles_info.obstacles.at(0).velocities.twist.linear.y);
-        ROS_ERROR("Name: %s %f %f %f", name.c_str(), this->Pose2.Y() , this->lastPose2.Y() ,  obstacles_info.obstacles.at(1).velocities.twist.linear.y);
-        ROS_ERROR("Name: %s %f %f %f", name.c_str(), this->Pose3.Y() , this->lastPose3.Y() ,  obstacles_info.obstacles.at(2).velocities.twist.linear.y);
-        ROS_ERROR("Name: %s %f %f %f", name.c_str(), this->Pose4.Y() , this->lastPose4.Y() ,  obstacles_info.obstacles.at(3).velocities.twist.linear.y);
-        ROS_ERROR("$$$$$");
-        pub.publish(obstacles_info);
-      // }
-
-
-      
+      pub.publish(obstacles_info);
     }
 
 
-    private: physics::ModelPtr model;
-
-    // Pointer to the update event connection
-    private: event::ConnectionPtr updateConnection;
-
-    // public: static geometry_msgs::Vector3 vec3_2;
-    private: std::vector<double> box_size;
+    public: 
 
     private:
-      ros::NodeHandle nh;
-      ros::Publisher pub;
+        physics::ModelPtr model;
 
-      gazebo::common::Time lastUpdate;
-      ignition::math::Pose3d lastPose1;
-      ignition::math::Pose3d lastPose2;
-      ignition::math::Pose3d lastPose3;
-      ignition::math::Pose3d lastPose4;
+        // Pointer to the update event connection
+        event::ConnectionPtr updateConnection;
 
-      ignition::math::Pose3d Pose1;
-      ignition::math::Pose3d Pose2;
-      ignition::math::Pose3d Pose3;
-      ignition::math::Pose3d Pose4;
+        std::vector<std::vector<double>> box_size;
+        std::vector<std::vector<double>> box_init_position;
+        std::vector<ignition::math::Pose3d> lastPose;
 
+        ros::NodeHandle nh;
+        ros::Publisher pub;
 
-      
-
-
-      costmap_converter::ObstacleArrayMsg obstacles_info;
+        std::vector<physics::ModelPtr> models;
+        
+        gazebo::common::Time lastUpdate;
+        costmap_converter::ObstacleArrayMsg obstacles_info;
      
     
   };
-  // geometry_msgs::Vector3 makeVec()
-  // {
-  //   geometry_msgs::Vector3 v;
-  //   v.x =5; v.y = 0 ; v.z = 0;
-  //   return v;
-  // }
-  // geometry_msgs::Vector3 AnimatedBox::vec3_2 = gazebo::makeVec();
+ 
 
 
 
   // Register this plugin with the simulator
   GZ_REGISTER_MODEL_PLUGIN(AnimatedBox)
 }
-

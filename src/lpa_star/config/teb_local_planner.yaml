@@ -1,12 +1,12 @@
 TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documentation/teb-tuning-guide and  http://wiki.ros.org/teb_local_planner/Tutorials/Incorporate%20dynamic%20obstacles
 
-  odom_topic: /odom
+  odom_topic: odom
   map_frame: map
       
   # Trajectory
     
   teb_autosize: True
-  dt_ref: 0.3 #0.2
+  dt_ref: 0.6 #0.2
   dt_hysteresis: 0.1
   global_plan_overwrite_orientation: True
   max_global_plan_lookahead_dist: 3.0
@@ -14,12 +14,12 @@ TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documenta
     
   # Robot
           
-  max_vel_x: 0.40 #0.25 
-  max_vel_x_backwards: 0.4 #0.2
+  max_vel_x: 0.26 #0.25 
+  max_vel_x_backwards: 0.26 #0.2
   max_vel_theta: 1.0 #0.5
   acc_lim_x: 0.5 # 0.2
   acc_lim_theta: 0.6283 #0.5, 0.26
-  min_turning_radius: 0.0
+  min_turning_radius: 0.5
   footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
     type: "polygon" #"circular" 
     radius: 0.38 # for type "circular"
@@ -39,13 +39,13 @@ TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documenta
       
   # Obstacles
       
-  min_obstacle_dist: 0.05
-  inflation_dist: 0.0
-  dynamic_obstacle_inflation_dist: 0.05
+  min_obstacle_dist: 0.6
+  inflation_dist: 0.8
+  dynamic_obstacle_inflation_dist: 0.5
   include_costmap_obstacles: True
   costmap_obstacles_behind_robot_dist: 0.1
   obstacle_poses_affected: 25 #30
-  costmap_converter_plugin: ""
+  costmap_converter_plugin: "obstacle"
   costmap_converter_spin_thread: True
   costmap_converter_rate: 5
 
@@ -62,7 +62,7 @@ TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documenta
   weight_acc_lim_theta: 1 # 1
   weight_kinematics_nh: 1000 #1000
   weight_kinematics_forward_drive: 1000 #1000
-  weight_kinematics_turning_radius: 1 #1 #only for car-like robots
+  weight_kinematics_turning_radius: 0  #1 #only for car-like robots
   weight_optimaltime: 1.0 #1
   weight_obstacle: 50 #50
   weight_viapoint: 5.0 #5.0 #1.0
@@ -72,10 +72,10 @@ TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documenta
 
   # Homotopy Class Planner
 
-  enable_homotopy_class_planning: False #True
+  enable_homotopy_class_planning: True #True --> Activate parallel planning in distinctive topologiesTo have 
   enable_multithreading: True
   simple_exploration: False
-  max_number_classes: 2 #4
+  max_number_classes: 4 #4 --> Number of distinctive trajectories taken into account
   roadmap_graph_no_samples: 15
   roadmap_graph_area_width: 5
   h_signature_prescaler: 0.5
@@ -91,55 +91,6 @@ TebLocalPlannerROS: # https://docs.movel.ai/new-collection/seirios-rns/documenta
   #Feedback
   publish_feedback: true #falseTebLocalPlannerROS:
 
-# Robot Configuration Parameters
-  max_vel_x: 0.46
-  min_vel_x: -0.26 #tick
-
-  max_vel_y: 0.0
-  min_vel_y: 0.0
-
-# The velocity when robot is moving in a straight line
-  max_vel_trans:  0.5
-  min_vel_trans:  -0.5
-  max_vel_x_backwards: -0.26 #tick
-  max_vel_theta: 1.82 #tick
-  min_vel_theta: -1.82
-
-  min_turning_radius: 0 #tick
-
-  acc_lim_x: 4.5 #tick
-  acc_lim_theta: 3.2  #tick
-
-# Goal Tolerance Parametes
-  xy_goal_tolerance: 0.05
-  yaw_goal_tolerance: 0.17
-  latch_xy_goal_tolerance: false
-
-# Forward Simulation Parameters
-  # sim_time: 6.0
-  vx_samples: 20
-  vy_samples: 0
-  vth_samples: 20
-  controller_frequency: 10.0
-
-# Trajectory Scoring Parameters
-  path_distance_bias: 32.0
-  goal_distance_bias: 20.0
-  occdist_scale: 0.02
-  forward_point_distance: 0.325
-  stop_time_buffer: 0.2
-  scaling_speed: 0.25
-  max_scaling_factor: 0.2
-
-# Oscillation Prevention Parameters
-  oscillation_reset_dist: 0.05
-
-# Debugging
-  publish_traj_pc : true
-  publish_cost_grid_pc: true
-
-
-  
   
   include_dynamic_obstacles: True
 

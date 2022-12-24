@@ -6,8 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Path2
-        - /Path3
       Splitter Ratio: 0.5
     Tree Height: 746
   - Class: rviz/Selection
@@ -230,6 +228,14 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /move_base/TebLocalPlannerROS/local_plan
       Unreliable: false
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /move_base/TebLocalPlannerROS/teb_markers
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
