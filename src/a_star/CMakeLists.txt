@@ -122,7 +122,7 @@ include_directories(
 add_library(Astar
   src/Astar.cpp
 )
-target_link_libraries(Astar /opt/ros/noetic/lib/libcostmap_2d.so /home/sohail/RosReview/devel/lib/libPointWrapper.so)
+target_link_libraries(Astar /opt/ros/noetic/lib/libcostmap_2d.so /home/sohail/RosReview/devel/lib/libPointWrapper.so) # mitoni injoori ham benvisi --> ${libPointWrapper.so}
 target_include_directories(Astar PRIVATE /home/sohail/RosReview/src/dijkstra/include/dijkstra) #To use pointWrapper library which is in the dijkstra package --> I guess you could've written it in the include_directories too
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

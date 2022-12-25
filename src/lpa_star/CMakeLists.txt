@@ -119,7 +119,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS} # in hamoon folder include hast vaghti ke miay toye folder RosReview va vaghti ham ke mikhay hala az custom msg e ke ijad kardi use kuni bayad refrence et oon bashe yani name folder va bad .h ro benvisi ke dar in cmake mishe #include<lpa_star/dynamic_obs.h>
 )
 
@@ -150,10 +150,10 @@ add_dependencies(lpa_star ${lpa_star_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(lpa_star
-  ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}
+  ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${libPointWrapper.so}
 )
 
-
+target_include_directories(lpa_star PRIVATE /home/sohail/RosReview/src/dijkstra/include/dijkstra)
 #############
 ## Install ##
 #############
@@ -214,7 +214,3 @@ target_link_libraries(lpa_star
 
 add_library(animated_box SHARED src/animated_box.cc)
 target_link_libraries(animated_box ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} )
-
-
-add_executable(independent_listener src/independent_listener.cc)
-target_link_libraries(independent_listener ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${geometry_msgs}  pthread)

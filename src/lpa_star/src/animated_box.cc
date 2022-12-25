@@ -78,60 +78,6 @@ namespace gazebo
         models.at(i)->SetAnimation(anim);
       }
 
-
-    public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
-    {
-      int argc; char** argv;
-      ros::init(argc,argv , "box_size");
-      pub = nh.advertise<costmap_converter::ObstacleArrayMsg>("/move_base/TebLocalPlannerROS/obstacles",4);
-
-      this->model = _parent; //boxes
-      
-      // ROS_ERROR("CHILD COUNT %i" , model->GetChildCount());
-      obstacles_info.obstacles.resize(4);
-      obstacles_info.obstacles.at(0).polygon.points.resize(1);
-      obstacles_info.obstacles.at(0).orientation.w = 1;
-      obstacles_info.obstacles.at(1).polygon.points.resize(1);
-      obstacles_info.obstacles.at(1).orientation.w = 1;
-      obstacles_info.obstacles.at(2).polygon.points.resize(1);
-      obstacles_info.obstacles.at(2).orientation.w = 1;
-      obstacles_info.obstacles.at(3).polygon.points.resize(1);
-      obstacles_info.obstacles.at(3).orientation.w = 1;
-      obstacles_info.header.frame_id = "odom";
-      obstacles_info.obstacles.at(0).id = 1;
-      obstacles_info.obstacles.at(1).id = 2;
-      obstacles_info.obstacles.at(2).id = 3;
-      obstacles_info.obstacles.at(3).id = 4;
-      box_size.resize(model->GetChildCount());
-
-      lastPose.resize(model->GetChildCount());
-       
-      box_init_position.resize(model->GetChildCount());
-      box_init_position.at(0).push_back(5);box_init_position.at(0).push_back(3); lastPose.at(0).SetX(5) ; lastPose.at(0).SetY(3);
-      box_init_position.at(1).push_back(10);box_init_position.at(1).push_back(-3);lastPose.at(1).SetX(10) ; lastPose.at(1).SetY(-3);
-      box_init_position.at(2).push_back(15);box_init_position.at(2).push_back(3);lastPose.at(2).SetX(15) ; lastPose.at(2).SetY(3);
-      box_init_position.at(3).push_back(20);box_init_position.at(3).push_back(-3);lastPose.at(3).SetX(20) ; lastPose.at(3).SetY(-3);
-      
-      for( int i = 0 ; i<model->GetChildCount(); i++)
-      {
-        models.push_back(boost::dynamic_pointer_cast<gazebo::physics::Model>(model->GetChild(i)));
-        // ROS_ERROR("model %s" , models.at(i)->GetName().c_str());
-        setBoxSizeParam(i);
-        setAnimationForBoxes(i);
-      }
-      
-      this->lastUpdate = gazebo::common::Time(0);
-
-
-      
-
-      https://answers.gazebosim.org//question/19883/can-someone-explain-the-role-of-connectworldupdatebegin-function/
-      this->updateConnection = event::Events::ConnectWorldUpdateBegin(
-          std::bind(&AnimatedBox::OnUpdate, this,std::placeholders::_1));
-    
-    }
-
-    public:
       void setObstacleInfo(int i ,double dt)
       {
         gazebo::physics::LinkPtr link = boost::dynamic_pointer_cast<gazebo::physics::Link>(this->models.at(i)->GetLink("link"));
@@ -153,46 +99,95 @@ namespace gazebo
         this->lastPose.at(i).SetY(Pose.Y());
       }
 
-    public: void OnUpdate(const common::UpdateInfo& info) //https://classic.gazebosim.org/tutorials?tut=actor&cat=build_robot
-    {
-      obstacles_info.header.stamp = ros::Time::now();
-
-      for( int i = 0 ; i<model->GetChildCount(); i++)
+      void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
       {
-        double dt = (info.simTime - this->lastUpdate).Double();
-        setObstacleInfo(i,dt);
-      }
-      this->lastUpdate = info.simTime;
-      pub.publish(obstacles_info);
-    }
+        int argc; char** argv;
+        ros::init(argc,argv , "box_size");
+        pub = nh.advertise<costmap_converter::ObstacleArrayMsg>("/move_base/TebLocalPlannerROS/obstacles",4);
 
-
-    public: 
-
-    private:
-        physics::ModelPtr model;
-
-        // Pointer to the update event connection
-        event::ConnectionPtr updateConnection;
-
-        std::vector<std::vector<double>> box_size;
-        std::vector<std::vector<double>> box_init_position;
-        std::vector<ignition::math::Pose3d> lastPose;
-
-        ros::NodeHandle nh;
-        ros::Publisher pub;
-
-        std::vector<physics::ModelPtr> models;
+        this->model = _parent; //boxes
         
-        gazebo::common::Time lastUpdate;
-        costmap_converter::ObstacleArrayMsg obstacles_info;
+        // ROS_ERROR("CHILD COUNT %i" , model->GetChildCount());
+        obstacles_info.obstacles.resize(4);
+        obstacles_info.obstacles.at(0).polygon.points.resize(1);
+        obstacles_info.obstacles.at(0).orientation.w = 1;
+        obstacles_info.obstacles.at(1).polygon.points.resize(1);
+        obstacles_info.obstacles.at(1).orientation.w = 1;
+        obstacles_info.obstacles.at(2).polygon.points.resize(1);
+        obstacles_info.obstacles.at(2).orientation.w = 1;
+        obstacles_info.obstacles.at(3).polygon.points.resize(1);
+        obstacles_info.obstacles.at(3).orientation.w = 1;
+        obstacles_info.header.frame_id = "odom";
+        obstacles_info.obstacles.at(0).id = 1;
+        obstacles_info.obstacles.at(1).id = 2;
+        obstacles_info.obstacles.at(2).id = 3;
+        obstacles_info.obstacles.at(3).id = 4;
+        box_size.resize(model->GetChildCount());
+
+        lastPose.resize(model->GetChildCount());
+        
+        box_init_position.resize(model->GetChildCount());
+        box_init_position.at(0).push_back(5);box_init_position.at(0).push_back(3); lastPose.at(0).SetX(5) ; lastPose.at(0).SetY(3);
+        box_init_position.at(1).push_back(10);box_init_position.at(1).push_back(-3);lastPose.at(1).SetX(10) ; lastPose.at(1).SetY(-3);
+        box_init_position.at(2).push_back(15);box_init_position.at(2).push_back(3);lastPose.at(2).SetX(15) ; lastPose.at(2).SetY(3);
+        box_init_position.at(3).push_back(20);box_init_position.at(3).push_back(-3);lastPose.at(3).SetX(20) ; lastPose.at(3).SetY(-3);
+        
+        for( int i = 0 ; i<model->GetChildCount(); i++)
+        {
+          models.push_back(boost::dynamic_pointer_cast<gazebo::physics::Model>(model->GetChild(i)));
+          // ROS_ERROR("model %s" , models.at(i)->GetName().c_str());
+          setBoxSizeParam(i);
+          setAnimationForBoxes(i);
+        }
+        
+        this->lastUpdate = gazebo::common::Time(0);
+
+
+        
+
+        https://answers.gazebosim.org//question/19883/can-someone-explain-the-role-of-connectworldupdatebegin-function/
+        this->updateConnection = event::Events::ConnectWorldUpdateBegin(
+            std::bind(&AnimatedBox::OnUpdate, this,std::placeholders::_1));
+      
+      }
+
+
+      void OnUpdate(const common::UpdateInfo& info) //https://classic.gazebosim.org/tutorials?tut=actor&cat=build_robot
+      {
+        obstacles_info.header.stamp = ros::Time::now();
+
+        for( int i = 0 ; i<model->GetChildCount(); i++)
+        {
+          double dt = (info.simTime - this->lastUpdate).Double();
+          setObstacleInfo(i,dt);
+        }
+        this->lastUpdate = info.simTime;
+        pub.publish(obstacles_info);
+      }
+
+
+
+      private:
+          physics::ModelPtr model;
+
+          // Pointer to the update event connection
+          event::ConnectionPtr updateConnection;
+
+          std::vector<std::vector<double>> box_size;
+          std::vector<std::vector<double>> box_init_position;
+          std::vector<ignition::math::Pose3d> lastPose;
+
+          ros::NodeHandle nh;
+          ros::Publisher pub;
+
+          std::vector<physics::ModelPtr> models;
+          
+          gazebo::common::Time lastUpdate;
+          costmap_converter::ObstacleArrayMsg obstacles_info;
      
     
   };
  
-
-
-
   // Register this plugin with the simulator
   GZ_REGISTER_MODEL_PLUGIN(AnimatedBox)
 }
