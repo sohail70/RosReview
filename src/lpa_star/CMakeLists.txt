@@ -9,6 +9,7 @@ project(lpa_star)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   message_generation
+  costmap_2d #age nazeri undefined reference migiri --> ya inja bayad bezari ya paeen target link library kuni fek kunam --> dar kul vase use kardan az func haye source costmap_2d in bayad bashe
 )
 
 
@@ -150,7 +151,7 @@ add_dependencies(lpa_star ${lpa_star_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(lpa_star
-  ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${libPointWrapper.so}
+  ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} /home/sohail/RosReview/devel/lib/libPointWrapper.so 
 )
 
 target_include_directories(lpa_star PRIVATE /home/sohail/RosReview/src/dijkstra/include/dijkstra)
