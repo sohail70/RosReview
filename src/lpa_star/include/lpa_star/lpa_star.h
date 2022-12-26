@@ -7,7 +7,7 @@
 #include<PointWrapper.h>
 #include<nav_msgs/OccupancyGrid.h>
 #include<costmap_2d/costmap_2d_ros.h>
-
+#include<geometry_msgs/PoseStamped.h>
 
 #include <tf2_ros/transform_listener.h>
 
@@ -18,7 +18,7 @@ namespace DynamicPlanner{
         public:
             LpaStar();
             ~LpaStar();
-            void initialize(const costmap_2d::Costmap2D& costmap);
+            void initialize(const std::shared_ptr<costmap_2d::Costmap2DROS>& costmap_ros);
             bool makePlan(const geometry_msgs::PoseStamped& start , const geometry_msgs::PoseStamped& goal , std::vector<geometry_msgs::PoseStamped> plan);
             void computeShortestPath();
             void updateVertex();
@@ -28,8 +28,7 @@ namespace DynamicPlanner{
             ros::NodeHandle nh;
             ros::Subscriber map_sub;
 
-            costmap_2d::Costmap2D* costmap; //https://answers.ros.org/question/60026/difference-between-costmap2d-and-occupancygrid-not-clear/
-            costmap_2d::Costmap2DROS* costmap_ros;
+            std::shared_ptr<costmap_2d::Costmap2DROS> costmap_ros;//https://answers.ros.org/question/60026/difference-between-costmap2d-and-occupancygrid-not-clear/
             nav_msgs::OccupancyGrid* map;
 
             
