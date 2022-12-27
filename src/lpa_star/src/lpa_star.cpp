@@ -26,7 +26,7 @@ namespace DynamicPlanner{
             this->costmap_ros->getCostmap()->indexToCells(i , x, y);    
             if(this->costmap_ros->getCostmap()->getCost(x,y)>0)
             {
-                ROS_ERROR("cost: %i",this->costmap_ros->getCostmap()->getCost(x,y));
+                // ROS_ERROR("cost: %i",this->costmap_ros->getCostmap()->getCost(x,y));
                 this->costmap_ros->getCostmap()->mapToWorld(x,y,p.x,p.y); 
                 this->points1->addPoint(p);
                 
@@ -67,57 +67,37 @@ void func(const costmap_2d::Costmap2DROS& object)
 
 
 //https://answers.ros.org/question/332304/problem-with-costmap2dros-and-tf-transform-listener-in-ros-melodic/
-std::shared_ptr<costmap_2d::Costmap2DROS> costmap_ros ;
+std::shared_ptr<costmap_2d::Costmap2DROS> costmap_ros_global ;
+std::shared_ptr<costmap_2d::Costmap2DROS> costmap_ros_local;
 
 int main(int argc , char** argv)
 {
     
     ros::init(argc, argv , "lpa_star");
-    ros::NodeHandle private_nh("~");
     ros::NodeHandle nh;
-
-    std::string robot_base_frame_ , global_frame_;
-    nh.param("lpa_star/robot_base_frame", robot_base_frame_, std::string("nothing"));
-    nh.param("lpa_star/global_frame", global_frame_, std::string("nothing"));
-    ROS_ERROR("SSSS %s %s", robot_base_frame_.c_str() , global_frame_.c_str());
 
     geometry_msgs::PoseStamped pose;
 
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tf2_listener(tfBuffer);;
-    costmap_ros = std::make_shared<costmap_2d::Costmap2DROS>("global_costmap", tfBuffer);
-    auto charmap = costmap_ros->getCostmap()->getCharMap();
-    for(int i = 0 ; i<98304 ; i++ , charmap++)
-    {
-        if(*charmap>0)
-            ROS_ERROR("ZZZZZ %i" , *charmap);
-    }
+    costmap_ros_global = std::make_shared<costmap_2d::Costmap2DROS>("global_costmap", tfBuffer);
+    costmap_ros_local = std::make_shared<costmap_2d::Costmap2DROS>("local_costmap" , tfBuffer);
 
+    costmap_ros_global->pause();
+    costmap_ros_local->pause();
 
-    costmap_ros->start();
-    ROS_ERROR("ASDASD %f %f %f " , costmap_ros->getRobotFootprint().at(0).x , costmap_ros->getRobotFootprint().at(0).y, costmap_ros->getRobotFootprint().at(0).z);
-    // costmap_ros->resetLayers();
-    // ros::Rate loop_rate(1); 
-    // while(ros::ok())
-    // {
-        
-    //     costmap_ros->getRobotPose(pose);
-    //     ROS_ERROR("POSE: %f %f" , pose.pose.position.x , pose.pose.position.y);
-    //     ros::spinOnce();
-
-    //     loop_rate.sleep();
-    // }
-
+    costmap_ros_global->start();
+    costmap_ros_local->start();
  
     DynamicPlanner::LpaStar lpa_star;
-    lpa_star.initialize(costmap_ros);
+    lpa_star.initialize(costmap_ros_global);
 
-    ros::Rate loop_rate(1);
+    // ros::Rate loop_rate(100);
     while(ros::ok())
     {    
 
         lpa_star.test();
-        loop_rate.sleep();
+        // loop_rate.sleep();
         ros::spinOnce();
     } 
 
