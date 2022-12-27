@@ -20,17 +20,17 @@
     </node>
 
     <!-- Global costmap -->
-    <node pkg="costmap_2d" type="costmap_2d_node" name="global_costmap">
+    <!-- <node pkg="costmap_2d" type="costmap_2d_node" name="global_costmap">
         <rosparam file="$(find lpa_star)/config/global_costmap.yaml" command="load" ns="costmap"/>
-    </node> 
+    </node>  -->
     <!-- Local costmap -->
-    <node pkg="costmap_2d" type="costmap_2d_node" name="local_costmap">
+    <!-- <node pkg="costmap_2d" type="costmap_2d_node" name="local_costmap">
         <rosparam file="$(find lpa_star)/config/local_costmap.yaml" command="load" ns="costmap"/>
-    </node> 
+    </node>  -->
 
     <!-- LPA STAR -->
     <node pkg="lpa_star" type="lpa_star" name="lpa_star">
-        <remap from="lpa_star/global_costmap/costmap/costmap" to="global_costmap/costmap/costmap"/>
+        <!-- <remap from="lpa_star/costmap/costmap" to="global_costmap/costmap/costmap"/> -->
         <!-- <remap from="lpa_star/global_costmap/costmap/costmap_updates" to="global_costmap/costmap/costmap_updates"/> -->
         <!-- <remap from="lpa_star/global_costmap/costmap/footprint" to="global_costmap/costmap/footprint"/> -->
         <!-- <remap from="lpa_star/global_costmap/costmap/inflation_layer/parameter_descriptions" to="global_costmap/costmap/inflation/parameter_descriptions"/> -->
@@ -39,6 +39,6 @@
         <!-- <remap from="lpa_star/global_costmap/costmap/obstacle_layer/parameter_updates" to="global_costmap/costmap/obstacle/parameter_updates"/> -->
         <!-- <remap from="lpa_star/global_costmap/costmap/parameter_descriptions" to="global_costmap/costmap/parameter_descriptions"/> -->
         <!-- <remap from="lpa_star/global_costmap/costmap/parameter_updates" to="global_costmap/costmap/parameter_updates"/> -->
-        <rosparam file="$(find lpa_star)/config/global_costmap.yaml" command="load"/>
+        <rosparam file="$(find lpa_star)/config/costmap_ros.yaml" command="load" ns="global_costmap"/>
     </node>
 </launch>

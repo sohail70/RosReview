@@ -10,7 +10,7 @@
 #include<geometry_msgs/PoseStamped.h>
 
 #include <tf2_ros/transform_listener.h>
-
+#include<geometry_msgs/Point.h>
 
 namespace DynamicPlanner{
 
@@ -23,7 +23,8 @@ namespace DynamicPlanner{
             void computeShortestPath();
             void updateVertex();
             void calculateKey();
-            
+
+            void test();
         private:
             ros::NodeHandle nh;
             ros::Subscriber map_sub;
@@ -35,7 +36,7 @@ namespace DynamicPlanner{
             // Q(key1 , key2 , index of a node in costmap array)
             std::priority_queue<std::tuple<float, float , int> , std::vector<std::tuple<float, float , int>> ,std::greater<std::tuple<float, float , int>> > q;
 
-            std::unique_ptr<PointWrapper> points;
+            std::unique_ptr<PointWrapper> points1;
             std::unique_ptr<PointWrapper> points2;
 
     };

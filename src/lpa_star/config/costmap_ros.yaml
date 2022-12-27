@@ -21,7 +21,7 @@ plugins:
 static:
   unknown_cost_value: -1
   lethal_cost_threshold: 100
-  map_topic: "map"
+  map_topic: map
 
 inflation:
   inflation_radius: 0.55
